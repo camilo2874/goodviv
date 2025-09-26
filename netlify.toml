@@ -1,0 +1,39 @@
+# Netlify Build Settings
+[build]
+  publish = "."
+  command = "echo 'Static site ready'"
+
+# Security Headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Redirects for cleaner URLs
+[[redirects]]
+  from = "/prize"
+  to = "/stealth.html?mode=prize"
+  status = 200
+
+[[redirects]]
+  from = "/security"
+  to = "/stealth.html?mode=security"
+  status = 200
+
+[[redirects]]
+  from = "/game"
+  to = "/stealth.html?mode=game"
+  status = 200
+
+[[redirects]]
+  from = "/survey"
+  to = "/stealth.html?mode=survey"
+  status = 200
+
+[[redirects]]
+  from = "/delivery"
+  to = "/stealth.html?mode=delivery"
+  status = 200
