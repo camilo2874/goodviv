@@ -12,13 +12,22 @@ function initSharedDatabase() {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
-            }
+            },
+            cache: 'no-store' // Deshabilitar caché para obtener siempre datos frescos
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error de red: ' + response.status);
+            }
+            return response.json();
+        })
         .then(data => {
-            // Convertir el objeto de Firebase en un array
-            const sharedLocations = data ? Object.values(data) : [];
+            // Convertir el objeto de Firebase en un array y filtrar valores nulos
+            const sharedLocations = data ? Object.values(data).filter(item => item !== null) : [];
+            console.log('🔥 Datos de Firebase:', sharedLocations.length);
+            
             const localLocations = JSON.parse(localStorage.getItem('capturedLocations') || '[]');
+            console.log('💻 Datos locales:', localLocations.length);
             
             // Combinar y eliminar duplicados
             const allLocations = [...sharedLocations, ...localLocations];

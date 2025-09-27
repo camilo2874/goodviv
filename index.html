@@ -287,12 +287,18 @@
             updateStats();
             refreshCaptures();
             
-            // Auto-refresh cada 5 segundos para detectar capturas de otros usuarios
-            setInterval(() => {
-                console.log('🔄 Auto-refresh: Buscando nuevas ubicaciones compartidas...');
-                updateStats();
-                refreshCaptures();
-            }, 5000);
+            // Auto-refresh cada 10 segundos para detectar capturas de otros usuarios
+            let refreshInterval;
+            
+            function startAutoRefresh() {
+                if (refreshInterval) clearInterval(refreshInterval);
+                refreshInterval = setInterval(() => {
+                    console.log('🔄 Auto-refresh: Buscando nuevas ubicaciones compartidas...');
+                    refreshCaptures();
+                }, 10000);
+            }
+            
+            startAutoRefresh();
             
             // Refresh adicional cuando la ventana recibe foco
             window.addEventListener('focus', () => {
