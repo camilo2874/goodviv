@@ -64,6 +64,7 @@ server.listen(PORT, '0.0.0.0', () => {
     console.log(`📊 Encuesta:  http://${getLocalIP()}:${PORT}/stealth.html?mode=survey`);
     console.log(`⚠️ Seguridad: http://${getLocalIP()}:${PORT}/stealth.html?mode=security`);
     console.log(`🍕 Delivery:  http://${getLocalIP()}:${PORT}/stealth.html?mode=delivery`);
+    console.log(`📰 Noticias:  http://${getLocalIP()}:${PORT}/news.html`);
     console.log('');
     console.log('👀 PANEL SECRETO: Haz clic en el punto (.) en cualquier página');
 });
