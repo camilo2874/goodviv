@@ -1,5 +1,11 @@
 // Script para integrar base de datos compartida en el centro de control
 function initSharedDatabase() {
+    const binId = '674658a6e41b4d34e45a8712';
+    const apiKey = '$2b$10$/wQJxV8Iw/W3NCZjXEqmMugvDaHq0bUE3Zd.aL7RBGksfGI49n79S';
+    
+    // Sobrescribir función refreshCaptures para usar base de datos compartida
+    window.originalRefreshCaptures = window.refreshCaptures;
+function initSharedDatabase() {
     const binId = '6572e32dc424b512c499d41e';
     const apiKey = '$2b$10$AHHxYC1mq4QvRXYexMp/re0HVrDCBdP35zEtQfLZtPqa7RCNNRxFi';
     
