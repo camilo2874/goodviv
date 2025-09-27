@@ -18,6 +18,44 @@
             background: #f8f9fa;
         }
         
+        .news-images-container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+        
+        .image-collage {
+            display: flex;
+            gap: 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .image-wrapper {
+            flex: 1;
+            position: relative;
+        }
+        
+        .image-wrapper img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .image-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
         .header {
             background: linear-gradient(135deg, #fd7777, #b91c1c);
             color: white;
@@ -455,7 +493,20 @@
                 </div>
             </div>
             
-            <img id="newsImage" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDgwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI4MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjZjNmNGY2Ii8+Cjx0ZXh0IHg9IjQwMCIgeT0iMjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNmI3MjgwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjQiPvCfk7ggSW1hZ2VuIGRlIGxhIG5vdGljaWE8L3RleHQ+Cjwvc3ZnPg==" alt="Imagen de la noticia" class="article-image">
+            <div class="news-images-container">
+                <div class="image-collage">
+                    <div class="image-wrapper">
+                        <img src="images/1.jpg" alt="Imagen del presunto responsable">
+                        <div class="image-caption">Presunto responsable</div>
+                    </div>
+                    <div class="image-wrapper">
+                        <img src="images/2.jpg" alt="Omar Andrés Benítez - Víctima">
+                        <div class="image-caption">Omar Andrés Benítez - Víctima</div>
+                    </div>
+                </div>
+            </div>
+
+            <img id="newsImage" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDgwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI4MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjZjNmNGY2Ii8+Cjx0ZXh0IHg9IjQwMCIgeT0iMjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNmI3MjgwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjQiPvCfk7ggSW1hZ2VuIGRlIGxhIG5vdGljaWE8L3RleHQ+Cjwvc3ZnPg==" alt="Imagen de la noticia" class="article-image" style="display: none;">
             
             <div class="article-content">
                 <p id="newsContent">Cargando contenido de la noticia...</p>
