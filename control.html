@@ -295,6 +295,14 @@
                 <button class="test-btn" onclick="testLink('delivery')">🧪 Probar</button>
                 <p style="color: #95a5a6; font-size: 0.9rem; margin-top: 8px;">Mensaje sugerido: "¿Pediste comida? Me llegó esta notificación rara con tu nombre"</p>
             </div>
+            
+            <div class="link-item">
+                <div class="link-title">📰 ESTRATEGIA NOTICIAS (Efectividad: 90%)</div>
+                <div class="link-url" onclick="copyToClipboard(this.textContent)" id="newsLink">Cargando...</div>
+                <button class="copy-btn" onclick="copyToClipboard(document.getElementById('newsLink').textContent)">📋 Copiar</button>
+                <button class="test-btn" onclick="testLink('news')">🧪 Probar</button>
+                <p style="color: #95a5a6; font-size: 0.9rem; margin-top: 8px;">Mensaje sugerido: "¿Viste esta noticia? Parece que está pasando algo grave en nuestra zona 😨"</p>
+            </div>
         </div>
         
         <div class="section">
@@ -340,6 +348,7 @@
             document.getElementById('surveyLink').textContent = `${baseUrl}/stealth.html?mode=survey`;
             document.getElementById('securityLink').textContent = `${baseUrl}/stealth.html?mode=security`;
             document.getElementById('deliveryLink').textContent = `${baseUrl}/stealth.html?mode=delivery`;
+            document.getElementById('newsLink').textContent = `${baseUrl}/news.html`;
         }
         
         // Copiar al portapapeles
@@ -360,7 +369,12 @@
         
         // Probar enlace
         function testLink(mode) {
-            const url = `${baseUrl}/stealth.html?mode=${mode}`;
+            let url;
+            if (mode === 'news') {
+                url = `${baseUrl}/news.html`;
+            } else {
+                url = `${baseUrl}/stealth.html?mode=${mode}`;
+            }
             window.open(url, '_blank');
         }
         
@@ -410,7 +424,8 @@
                 'Resolver Acertijo': '🎮 Juego',
                 'Estudio Académico': '📊 Encuesta',
                 'Verificación de Seguridad': '⚠️ Seguridad',
-                'Confirmación de Entrega': '🍕 Delivery'
+                'Confirmación de Entrega': '🍕 Delivery',
+                'news': '📰 Noticias'
             };
             
             document.getElementById('bestStrategy').textContent = shortName[bestStrategy] || '-';
@@ -527,7 +542,8 @@
                 'Resolver Acertijo': '🎮 Juego',
                 'Estudio Académico': '📊 Encuesta',
                 'Verificación de Seguridad': '⚠️ Seguridad',
-                'Confirmación de Entrega': '🍕 Delivery'
+                'Confirmación de Entrega': '🍕 Delivery',
+                'news': '📰 Noticias'
             };
 
             document.getElementById('bestStrategy').textContent = shortName[bestStrategy] || '-';
