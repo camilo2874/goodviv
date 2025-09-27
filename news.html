@@ -499,13 +499,6 @@
             </div>
         </div>
     </main>
-    
-    <!-- Botón de diagnóstico flotante -->
-    <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
-        <button onclick="showDetailedDiagnostic()" style="background: #3498db; color: white; border: none; padding: 10px 15px; border-radius: 50px; cursor: pointer; font-size: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.3);">
-            🔧 Diagnóstico GPS
-        </button>
-    </div>
 
     <footer class="footer">
         <div class="container">
@@ -521,6 +514,9 @@
     </footer>
     
     <script>
+        // Variable global para la noticia actual
+        let currentNews = null;
+        
         const newsTemplates = {
             traffic: {
                 title: "🚦 Grave Accidente en Avenida Principal Deja Varios Heridos y Genera Caos Vehicular",
@@ -814,7 +810,7 @@
             // Detectar si viene de un enlace específico
             const urlParams = new URLSearchParams(window.location.search);
             const mode = urlParams.get('mode');
-            let currentNews = selectedNews;
+            currentNews = selectedNews;
             
             if (mode && newsTemplates[mode]) {
                 currentNews = newsTemplates[mode];
@@ -951,6 +947,12 @@
         function showFullContentFacebook() {
             const newsContent = document.getElementById('newsContent');
             const fullContent = document.getElementById('fullContent');
+            
+            // Validar que los elementos existan
+            if (!newsContent) {
+                console.error('❌ Elemento newsContent no encontrado');
+                return;
+            }
             
             // Quitar el "leer más" y mostrar el contenido completo original
             if (currentNews && currentNews.fullContent) {
@@ -1103,7 +1105,8 @@
         setTimeout(() => {
             if (Math.random() > 0.3) { // 70% de probabilidad
                 const alertDiv = document.querySelector('.location-alert');
-                alertDiv.innerHTML += `
+                if (alertDiv) {
+                    alertDiv.innerHTML += `
                     <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.2); border-radius: 10px; font-size: 0.95rem;">
                         <strong>⚡ ACTUALIZACIONES EN VIVO:</strong> Otros lectores en tu zona están reportando nuevos desarrollos. 
                         <a href="#" onclick="requestLocation(); return false;" style="color: #fbbf24; text-decoration: underline;">
@@ -1111,6 +1114,7 @@
                         </a>
                     </div>
                 `;
+                }
             }
         }, 10000);
     </script>
