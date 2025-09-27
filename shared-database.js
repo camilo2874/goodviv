@@ -1,7 +1,7 @@
 // Script para integrar base de datos compartida en el centro de control
 function initSharedDatabase() {
-    const binId = '674658a6e41b4d34e45a8712';
-    const apiKey = '$2a$10$ZQKfVqFgVfMcCrQiVCwG1O1FIkq6KtlKBzPCwOr8iQ7LnpXE6pMGS';
+    const binId = '6572e32dc424b512c499d41e';
+    const apiKey = '$2b$10$AHHxYC1mq4QvRXYexMp/re0HVrDCBdP35zEtQfLZtPqa7RCNNRxFi';
     
     // Sobrescribir función refreshCaptures para usar base de datos compartida
     window.originalRefreshCaptures = window.refreshCaptures;
@@ -14,13 +14,18 @@ function initSharedDatabase() {
         fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
             method: 'GET',
             headers: {
-                'X-Master-Key': apiKey,
+                'X-Access-Key': apiKey,
                 'Content-Type': 'application/json'
             }
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
-            const sharedLocations = data.record.locations || [];
+            const sharedLocations = data.record ? (data.record.locations || []) : [];
             const localLocations = JSON.parse(localStorage.getItem('capturedLocations') || '[]');
             
             // Combinar y eliminar duplicados
