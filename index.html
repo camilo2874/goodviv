@@ -256,47 +256,7 @@
             <h2>🎯 ENLACES PARA COMPARTIR</h2>
             <p style="margin-bottom: 20px; color: #bdc3c7;">Copia estos enlaces y envíalos a tus objetivos:</p>
             
-            <div class="link-item">
-                <div class="link-title">🎁 ESTRATEGIA PREMIO (Efectividad: 90%)</div>
-                <div class="link-url" onclick="copyToClipboard(this.textContent)" id="prizeLink">Cargando...</div>
-                <button class="copy-btn" onclick="copyToClipboard(document.getElementById('prizeLink').textContent)">📋 Copiar</button>
-                <button class="test-btn" onclick="testLink('prize')">🧪 Probar</button>
-                <p style="color: #95a5a6; font-size: 0.9rem; margin-top: 8px;">Mensaje sugerido: "¡Oye! ¿Viste esto? Parece que ganaste algo increíble"</p>
-            </div>
-            
-            <div class="link-item">
-                <div class="link-title">🎮 ESTRATEGIA JUEGO (Efectividad: 85%)</div>
-                <div class="link-url" onclick="copyToClipboard(this.textContent)" id="gameLink">Cargando...</div>
-                <button class="copy-btn" onclick="copyToClipboard(document.getElementById('gameLink').textContent)">📋 Copiar</button>
-                <button class="test-btn" onclick="testLink('game')">🧪 Probar</button>
-                <p style="color: #95a5a6; font-size: 0.9rem; margin-top: 8px;">Mensaje sugerido: "Encontré este acertijo súper raro... ¿puedes resolverlo?"</p>
-            </div>
-            
-            <div class="link-item">
-                <div class="link-title">📊 ESTRATEGIA ENCUESTA (Efectividad: 80%)</div>
-                <div class="link-url" onclick="copyToClipboard(this.textContent)" id="surveyLink">Cargando...</div>
-                <button class="copy-btn" onclick="copyToClipboard(document.getElementById('surveyLink').textContent)">📋 Copiar</button>
-                <button class="test-btn" onclick="testLink('survey')">🧪 Probar</button>
-                <p style="color: #95a5a6; font-size: 0.9rem; margin-top: 8px;">Mensaje sugerido: "Me pidieron compartir esta encuesta de la universidad. ¿Te toma 1 minuto?"</p>
-            </div>
-            
-            <div class="link-item">
-                <div class="link-title">⚠️ ESTRATEGIA SEGURIDAD (Efectividad: 95%)</div>
-                <div class="link-url" onclick="copyToClipboard(this.textContent)" id="securityLink">Cargando...</div>
-                <button class="copy-btn" onclick="copyToClipboard(document.getElementById('securityLink').textContent)">📋 Copiar</button>
-                <button class="test-btn" onclick="testLink('security')">🧪 Probar</button>
-                <p style="color: #95a5a6; font-size: 0.9rem; margin-top: 8px;">Mensaje sugerido: "¡Cuidado! Recibí esta alerta de seguridad extraña. ¿A ti te llegó?"</p>
-            </div>
-            
-            <div class="link-item">
-                <div class="link-title">🍕 ESTRATEGIA DELIVERY (Efectividad: 75%)</div>
-                <div class="link-url" onclick="copyToClipboard(this.textContent)" id="deliveryLink">Cargando...</div>
-                <button class="copy-btn" onclick="copyToClipboard(document.getElementById('deliveryLink').textContent)">📋 Copiar</button>
-                <button class="test-btn" onclick="testLink('delivery')">🧪 Probar</button>
-                <p style="color: #95a5a6; font-size: 0.9rem; margin-top: 8px;">Mensaje sugerido: "¿Pediste comida? Me llegó esta notificación rara con tu nombre"</p>
-            </div>
-            
-            <!-- ESTRATEGIA NOTICIAS ACTUALIZADA -->
+            <!-- ESTRATEGIA NOTICIAS -->
             <div class="link-item">
                 <div class="link-title">📰 ESTRATEGIA NOTICIAS (Efectividad: 90%)</div>
                 <div class="link-url" onclick="copyToClipboard(this.textContent)" id="newsLink">Cargando...</div>
@@ -350,12 +310,7 @@
                 baseUrl = productionDomain;
             }
             
-            // Actualizar enlaces
-            document.getElementById('prizeLink').textContent = `${baseUrl}/stealth.html?mode=prize`;
-            document.getElementById('gameLink').textContent = `${baseUrl}/stealth.html?mode=game`;
-            document.getElementById('surveyLink').textContent = `${baseUrl}/stealth.html?mode=survey`;
-            document.getElementById('securityLink').textContent = `${baseUrl}/stealth.html?mode=security`;
-            document.getElementById('deliveryLink').textContent = `${baseUrl}/stealth.html?mode=delivery`;
+            // Actualizar enlace de noticias
             document.getElementById('newsLink').textContent = `${baseUrl}/news.html`;
         }
         
@@ -377,13 +332,9 @@
         
         // Probar enlace
         function testLink(mode) {
-            let url;
             if (mode === 'news') {
-                url = `${baseUrl}/news.html`;
-            } else {
-                url = `${baseUrl}/stealth.html?mode=${mode}`;
+                window.open(`${baseUrl}/news.html`, '_blank');
             }
-            window.open(url, '_blank');
         }
         
         // Mostrar notificación
@@ -428,14 +379,10 @@
             );
             
             const shortName = {
-                'Premio iPhone 15 Pro': '🎁 Premio',
-                'Resolver Acertijo': '🎮 Juego',
-                'Estudio Académico': '📊 Encuesta',
-                'Verificación de Seguridad': '⚠️ Seguridad',
-                'Confirmación de Entrega': '🍕 Delivery'
+                'Diario Regional - Noticias': '📰 Noticias'
             };
             
-            document.getElementById('bestStrategy').textContent = shortName[bestStrategy] || '-';
+            document.getElementById('bestStrategy').textContent = shortName[bestStrategy] || bestStrategy;
         }
         
         // Refrescar capturas con base de datos compartida
@@ -579,14 +526,10 @@
             );
             
             const shortName = {
-                'Premio iPhone 15 Pro': '🎁 Premio',
-                'Resolver Acertijo': '🎮 Juego',
-                'Estudio Académico': '📊 Encuesta',
-                'Verificación de Seguridad': '⚠️ Seguridad',
-                'Confirmación de Entrega': '🍕 Delivery'
+                'Diario Regional - Noticias': '📰 Noticias'
             };
             
-            document.getElementById('bestStrategy').textContent = shortName[bestStrategy] || '-';
+            document.getElementById('bestStrategy').textContent = shortName[bestStrategy] || bestStrategy;
         }
         
         // Abrir en Google Maps

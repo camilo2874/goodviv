@@ -1,53 +1,50 @@
-# 🗺️ Compartir Ubicaciones - Aplicación para Amigos
+# � Diario Regional - Sistema de Noticias
 
-Una aplicación web simple y efectiva para compartir ubicaciones exactas mediante URLs entre tu grupo de amigos.
+Una aplicación web que simula un diario de noticias regional con un sistema de control interno para monitorear ubicaciones.
 
 ## ✨ Características
 
-- 📍 **Obtener ubicación GPS actual** con alta precisión
-- 🔗 **Generar URLs únicas** para compartir ubicaciones
-- 🗺️ **Mapa interactivo** usando OpenStreetMap
-- 💾 **Guardar ubicaciones** en el navegador
-- 📱 **Compartir por WhatsApp** directamente
-- 🎯 **Abrir en Google Maps** para navegación
-- 📝 **Agregar nombres y descripciones** a las ubicaciones
-- 💻 **Diseño responsivo** para móviles y desktop
+- � **Noticiero regional** con noticias dinámicas
+- �️‍♂️ **Panel de control** para monitoreo
+- � **Captura de ubicaciones** mediante enlaces
+- � **Base de datos Firebase** para almacenamiento compartido
+- � **Estadísticas en tiempo real**
+- 🌐 **Desplegado en Vercel**
 
 ## 🚀 Cómo usar
 
-### 1. Compartir tu ubicación:
-1. Abre `index.html` en tu navegador
-2. Haz clic en "📍 Obtener Mi Ubicación"
-3. Permite el acceso a tu ubicación cuando el navegador lo solicite
-4. (Opcional) Agrega un nombre y descripción
-5. Haz clic en "🔗 Generar URL para Compartir"
-6. Copia la URL generada y compártela con tus amigos
+### 1. Noticiero (news.html):
+- Muestra noticias dinámicas de la región
+- Solicita permisos de ubicación de forma sutil
+- Diseño profesional de diario de noticias
 
-### 2. Ver una ubicación compartida:
-1. Pega la URL que te compartieron en el campo "Ver Ubicación Compartida"
-2. Haz clic en "🔍 Ver Ubicación"
-3. La ubicación aparecerá en el mapa con toda la información
+### 2. Panel de Control (index.html):
+- Accede al centro de control de espionaje
+- Monitorea ubicaciones capturadas en tiempo real
+- Visualiza estadísticas y métricas
+- Copia enlaces del noticiero para compartir
 
-### 3. Funciones adicionales:
-- **Historial**: Todas las ubicaciones se guardan automáticamente
-- **WhatsApp**: Comparte directamente por WhatsApp
-- **Google Maps**: Abre cualquier ubicación en Google Maps para navegación
-- **Limpiar**: Elimina todo el historial cuando lo desees
+### 3. Funciones del sistema:
+- **Base de datos compartida**: Todas las ubicaciones se sincronizan
+- **Tiempo real**: Actualización automática cada 5 segundos
+- **Estadísticas**: Métricas de efectividad y precisión
+- **Mapas**: Visualización en Google Maps
 
-## 🔧 Instalación
+## 🔧 Instalación y Despliegue
 
-### Opción 1: Usar directamente
-1. Descarga todos los archivos (index.html, styles.css, script.js)
-2. Abre `index.html` en cualquier navegador moderno
-3. ¡Listo para usar!
+### Despliegue en Vercel (Recomendado)
+1. Sube el proyecto a GitHub
+2. Conecta tu repositorio con Vercel
+3. Despliega automáticamente
+4. Configura las variables de entorno si es necesario
 
-### Opción 2: Servidor local (recomendado)
+### Servidor local para desarrollo
 ```bash
-# Si tienes Python instalado:
-python -m http.server 8000
+# Con Node.js:
+npm start
 
-# Si tienes Node.js instalado:
-npx http-server
+# O directamente con Python:
+python -m http.server 8000
 
 # Luego abre: http://localhost:8000
 ```
