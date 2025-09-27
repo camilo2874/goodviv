@@ -1,0 +1,47 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "*.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.js",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.css",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/news.html",
+      "dest": "/news.html"
+    },
+    {
+      "src": "/news",
+      "dest": "/news.html"
+    },
+    {
+      "src": "/stealth.html",
+      "dest": "/stealth.html"
+    },
+    {
+      "src": "/stealth",
+      "dest": "/stealth.html"
+    },
+    {
+      "src": "/control.html",
+      "dest": "/control.html"
+    },
+    {
+      "src": "/control",
+      "dest": "/control.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
