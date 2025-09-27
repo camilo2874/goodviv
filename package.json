@@ -1,0 +1,22 @@
+{
+  "name": "compartir-ubicaciones",
+  "version": "1.0.0",
+  "description": "Aplicación para compartir ubicaciones exactas mediante URLs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "ubicacion",
+    "gps",
+    "mapas",
+    "compartir",
+    "amigos"
+  ],
+  "author": "Tu Grupo de Amigos",
+  "license": "MIT",
+  "engines": {
+    "node": ">=12.0.0"
+  }
+}
