@@ -5,9 +5,6 @@ function initSharedDatabase() {
     
     // Sobrescribir función refreshCaptures para usar base de datos compartida
     window.originalRefreshCaptures = window.refreshCaptures;
-function initSharedDatabase() {
-    const binId = '6572e32dc424b512c499d41e';
-    const apiKey = '$2b$10$AHHxYC1mq4QvRXYexMp/re0HVrDCBdP35zEtQfLZtPqa7RCNNRxFi';
     
     // Sobrescribir función refreshCaptures para usar base de datos compartida
     window.originalRefreshCaptures = window.refreshCaptures;
@@ -21,13 +18,12 @@ function initSharedDatabase() {
             method: 'GET',
             headers: {
                 'X-Master-Key': apiKey,
-                'Content-Type': 'application/json',
-                'X-Bin-Meta': false
+                'Content-Type': 'application/json'
             }
         })
         .then(response => response.json())
         .then(data => {
-            const sharedLocations = data.record ? (data.record.locations || []) : [];
+            const sharedLocations = data.locations || [];
             const localLocations = JSON.parse(localStorage.getItem('capturedLocations') || '[]');
             
             // Combinar y eliminar duplicados
