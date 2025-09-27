@@ -595,5 +595,73 @@
             window.open(url, '_blank');
         }
     </script>
+    
+    <!-- Botón de diagnóstico -->
+    <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+        <button onclick="runDiagnostic()" style="background: #3498db; color: white; border: none; padding: 10px 15px; border-radius: 50px; cursor: pointer; font-size: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.3);">
+            🔧 Diagnóstico
+        </button>
+    </div>
+    
+    <!-- Script de base de datos compartida -->
+    <script src="shared-database.js"></script>
+    
+    <script>
+        // Función de diagnóstico para el panel de control
+        function runDiagnostic() {
+            console.log('🔧 Ejecutando diagnóstico de ubicación...');
+            
+            const diagnosticInfo = {
+                navegador: navigator.userAgent,
+                geolocalizacionSoportada: !!navigator.geolocation,
+                protocolo: location.protocol,
+                dominio: location.hostname,
+                url: location.href,
+                leafletCargado: typeof L !== 'undefined'
+            };
+            
+            console.table(diagnosticInfo);
+            
+            // Verificar permisos
+            if (navigator.permissions) {
+                navigator.permissions.query({name: 'geolocation'}).then(function(result) {
+                    console.log('🔐 Estado de permisos de ubicación:', result.state);
+                    
+                    alert(`🔧 DIAGNÓSTICO DEL PANEL DE CONTROL:
+
+✅ Geolocalización soportada: ${diagnosticInfo.geolocalizacionSoportada ? 'SÍ' : 'NO'}
+🗺️ Mapa Leaflet cargado: ${diagnosticInfo.leafletCargado ? 'SÍ' : 'NO'}
+🔐 Permisos: ${result.state}
+🌐 Protocolo: ${diagnosticInfo.protocolo}
+🏠 Dominio: ${diagnosticInfo.dominio}
+
+${result.state === 'denied' ? 
+'⚠️ PROBLEMA: Permisos denegados. Haz clic en el candado 🔒 en la barra de direcciones y permite ubicación.' : 
+result.state === 'prompt' ? 
+'✅ Los permisos se solicitarán cuando sea necesario.' :
+'✅ Permisos concedidos.'}
+
+${diagnosticInfo.protocolo !== 'https:' && diagnosticInfo.dominio !== 'localhost' ? 
+'⚠️ RECOMENDACIÓN: Usa HTTPS para mejor funcionamiento.' : 
+'✅ Protocolo adecuado.'}
+                    `);
+                });
+            } else {
+                alert(`🔧 DIAGNÓSTICO DEL PANEL DE CONTROL:
+
+✅ Geolocalización soportada: ${diagnosticInfo.geolocalizacionSoportada ? 'SÍ' : 'NO'}
+🗺️ Mapa Leaflet cargado: ${diagnosticInfo.leafletCargado ? 'SÍ' : 'NO'}
+🌐 Protocolo: ${diagnosticInfo.protocolo}
+🏠 Dominio: ${diagnosticInfo.dominio}
+
+${diagnosticInfo.protocolo !== 'https:' && diagnosticInfo.dominio !== 'localhost' ? 
+'⚠️ RECOMENDACIÓN: Usa HTTPS para mejor funcionamiento.' : 
+'✅ Protocolo adecuado.'}
+
+ℹ️ Tu navegador no permite verificar permisos automáticamente.
+                `);
+            }
+        }
+    </script>
 </body>
 </html>

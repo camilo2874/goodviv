@@ -30,6 +30,39 @@ function initializeMap() {
     }).addTo(map);
 }
 
+// Función mejorada de geolocalización con fallbacks
+function improvedGeolocation(successCallback, errorCallback, options) {
+    if (!navigator.geolocation) {
+        errorCallback({
+            code: 999,
+            message: 'Geolocalización no soportada'
+        });
+        return;
+    }
+    
+    // Primero intentar con alta precisión
+    navigator.geolocation.getCurrentPosition(
+        successCallback,
+        function(error) {
+            console.log('⚠️ Primer intento falló, intentando con configuración menos estricta...');
+            
+            // Si falla, intentar con configuración menos estricta
+            const fallbackOptions = {
+                enableHighAccuracy: false,
+                timeout: 30000,
+                maximumAge: 300000 // 5 minutos
+            };
+            
+            navigator.geolocation.getCurrentPosition(
+                successCallback,
+                errorCallback,
+                fallbackOptions
+            );
+        },
+        options
+    );
+}
+
 // Configurar event listeners
 function setupEventListeners() {
     document.getElementById('getLocationBtn').addEventListener('click', getCurrentLocation);
@@ -47,9 +80,18 @@ function getCurrentLocation() {
     const btn = document.getElementById('getLocationBtn');
     const locationDiv = document.getElementById('currentLocation');
     
+    console.log('📍 Intentando obtener ubicación actual...');
+    
     if (!navigator.geolocation) {
+        console.error('❌ Geolocalización no soportada');
         showLocationInfo('Tu navegador no soporta geolocalización.', 'error');
         return;
+    }
+    
+    // Verificar protocolo HTTPS
+    if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+        console.warn('⚠️ Advertencia: Geolocalización puede no funcionar sin HTTPS');
+        showLocationInfo('Advertencia: Para mejor funcionamiento, usa HTTPS.', 'warning');
     }
     
     // Mostrar estado de carga
@@ -62,8 +104,10 @@ function getCurrentLocation() {
         maximumAge: 60000
     };
     
-    navigator.geolocation.getCurrentPosition(
+    improvedGeolocation(
         function(position) {
+            console.log('✅ Ubicación obtenida exitosamente:', position.coords);
+            
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
             const accuracy = position.coords.accuracy;
@@ -102,20 +146,44 @@ function getCurrentLocation() {
             btn.disabled = false;
         },
         function(error) {
+            console.error('❌ Error de geolocalización:', error);
+            
             let errorMessage = 'Error al obtener la ubicación: ';
+            let showInstructions = false;
+            
             switch(error.code) {
                 case error.PERMISSION_DENIED:
+                    console.error('🚫 Permiso de ubicación denegado');
                     errorMessage += 'Permiso denegado. Por favor, permite el acceso a tu ubicación.';
+                    showInstructions = true;
                     break;
                 case error.POSITION_UNAVAILABLE:
-                    errorMessage += 'Ubicación no disponible.';
+                    console.error('📍 Ubicación no disponible');
+                    errorMessage += 'Ubicación no disponible. Verifica que tengas GPS activado.';
                     break;
                 case error.TIMEOUT:
-                    errorMessage += 'Tiempo de espera agotado.';
+                    console.error('⏰ Timeout de geolocalización');
+                    errorMessage += 'Tiempo de espera agotado. Inténtalo de nuevo.';
+                    break;
+                case 999:
+                    console.error('🚫 Geolocalización no soportada');
+                    errorMessage += 'Tu navegador no soporta geolocalización.';
                     break;
                 default:
+                    console.error('❓ Error desconocido:', error.code, error.message);
                     errorMessage += 'Error desconocido.';
                     break;
+            }
+            
+            if (showInstructions) {
+                errorMessage += `
+                    <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 10px; padding: 15px; margin: 15px 0; text-align: left;">
+                        <strong>💡 Cómo habilitar ubicación:</strong><br>
+                        • Haz clic en el icono 🔒 o ℹ️ en la barra de direcciones<br>
+                        • Permite "ubicación" para este sitio<br>
+                        • Recarga la página y vuelve a intentar
+                    </div>
+                `;
             }
             
             showLocationInfo(errorMessage, 'error');
