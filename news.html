@@ -1107,6 +1107,13 @@
                         // ❌ FALLÓ - Regresar a la noticia principal
                         console.log(`❌ Fallo en intento ${attemptNumber}:`, error.message);
                         
+                        // Detectar si los permisos están bloqueados permanentemente
+                        if (error.code === error.PERMISSION_DENIED && error.message.includes('blocked')) {
+                            console.log('🚫 Permisos bloqueados permanentemente - mostrando instrucciones');
+                            showPermissionBlockedInstructions();
+                            return;
+                        }
+                        
                         if (attemptNumber <= 3) {
                             // Mostrar mensaje y regresar a "leer más"
                             showLocationDeniedMessage(attemptNumber);
@@ -1222,6 +1229,66 @@
 🔄 Intenta nuevamente después de verificar estos puntos.`;
                 
                 alert(diagnosticMessage);
+            }
+        }
+        
+        // Función para mostrar instrucciones cuando los permisos están bloqueados
+        function showPermissionBlockedInstructions() {
+            const content = document.getElementById('verificationContent');
+            if (content) {
+                content.innerHTML = `
+                    <div style="font-size: 4rem; margin-bottom: 30px;">🚫</div>
+                    <h2 style="font-size: 1.6rem; margin-bottom: 20px; font-weight: 600; color: #f59e0b;">
+                        Verificación Bloqueada
+                    </h2>
+                    <p style="margin: 20px 0; font-size: 1.1rem; line-height: 1.5; color: #e5e7eb;">
+                        El navegador ha bloqueado las verificaciones de seguridad. Para acceder al contenido necesitas resetear los permisos:
+                    </p>
+                    
+                    <div style="text-align: left; margin: 25px 0; padding: 20px; background: rgba(245, 158, 11, 0.1); border-radius: 10px; border: 1px solid rgba(245, 158, 11, 0.3);">
+                        <h3 style="color: #f59e0b; margin-bottom: 15px; font-size: 1.2rem;">📋 Instrucciones para Chrome:</h3>
+                        <ol style="color: #e5e7eb; font-size: 1rem; line-height: 1.6; margin: 0; padding-left: 20px;">
+                            <li>Haz clic en el <strong>ícono de candado 🔒</strong> junto a la URL</li>
+                            <li>Selecciona <strong>"Configuración del sitio"</strong></li>
+                            <li>En <strong>"Ubicación"</strong> cambia a <strong>"Preguntar"</strong></li>
+                            <li>Recarga la página y vuelve a intentar</li>
+                        </ol>
+                    </div>
+
+                    <div style="margin: 30px 0;">
+                        <button onclick="location.reload()" style="
+                            background: linear-gradient(135deg, #f59e0b, #d97706);
+                            color: white;
+                            border: none;
+                            padding: 18px 40px;
+                            border-radius: 50px;
+                            font-size: 1.2rem;
+                            font-weight: bold;
+                            cursor: pointer;
+                            margin: 10px;
+                            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+                        ">🔄 Recargar Página</button>
+                        
+                        <button onclick="hideVerificationOverlay(); showFullContentFacebook();" style="
+                            background: linear-gradient(135deg, #6b7280, #4b5563);
+                            color: white;
+                            border: none;
+                            padding: 18px 40px;
+                            border-radius: 50px;
+                            font-size: 1.2rem;
+                            font-weight: bold;
+                            cursor: pointer;
+                            margin: 10px;
+                            box-shadow: 0 4px 15px rgba(107, 114, 128, 0.3);
+                        ">📰 Continuar Sin Verificar</button>
+                    </div>
+                    
+                    <p style="font-size: 0.9rem; color: #6b7280; margin-top: 15px;">
+                        💡 Después de seguir las instrucciones, la verificación funcionará correctamente
+                    </p>
+                `;
+                
+                console.log('🚫 Instrucciones de permisos bloqueados mostradas');
             }
         }
         
