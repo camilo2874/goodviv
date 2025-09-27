@@ -16,7 +16,8 @@ function initSharedDatabase() {
         })
         .then(response => response.json())
         .then(data => {
-            const sharedLocations = data.locations || [];
+            // Convertir el objeto de Firebase en un array
+            const sharedLocations = data ? Object.values(data) : [];
             const localLocations = JSON.parse(localStorage.getItem('capturedLocations') || '[]');
             
             // Combinar y eliminar duplicados
