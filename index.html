@@ -334,7 +334,12 @@
         
         // Detectar URL base
         function detectBaseUrl() {
+            const productionDomain = 'https://goodviv.vercel.app';
             baseUrl = window.location.origin;
+
+            if (window.location.hostname.endsWith('.vercel.app') && window.location.origin !== productionDomain) {
+                baseUrl = productionDomain;
+            }
             
             // Actualizar enlaces
             document.getElementById('prizeLink').textContent = `${baseUrl}/stealth.html?mode=prize`;
