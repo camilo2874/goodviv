@@ -555,10 +555,8 @@
                 </div>
             </div>
 
-            <img id="newsImage" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDgwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI4MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjZjNmNGY2Ii8+Cjx0ZXh0IHg9IjQwMCIgeT0iMjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNmI3MjgwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjQiPvCfk7ggSW1hZ2VuIGRlIGxhIG5vdGljaWE8L3RleHQ+Cjwvc3ZnPg==" alt="Imagen de la noticia" class="article-image" style="display: none;">
-            
             <div class="article-content">
-                <p id="newsContent">Cargando contenido de la noticia...</p>
+                <p id="newsContent">Atención, porque las autoridades ya tendrían en la mira al presunto responsable de un crimen que tiene de luto a Nariño. Se trataría del asesino de Omar Andrés Benítez, conocido como 'Coquito'. Fuentes extraoficiales señalan que su paradero estaría prácticamente localizado, y de confirmarse su captura, podría enfrentar una condena de hasta 17 años de cárcel. Una historia que hoy estremece a todo un pueblo y que clama justicia inmediata... <span class="read-more-link" onclick="expandNewsFacebook()"><strong>leer más</strong></span></p>
                 
                 <!-- Contenido adicional que se mostrará después del "Leer más" -->
                 <div id="fullContent" style="display: none;">
@@ -585,8 +583,77 @@
             </div>
         </div>
     </footer>
-            try {
-                console.log('🌐 Iniciando captura automática por IP...');
+            // Función para mostrar el contenido completo
+function showFullContent() {
+    const newsContent = document.getElementById('newsContent');
+    if (newsContent) {
+        newsContent.innerHTML = `Atención, porque las autoridades ya tendrían en la mira al presunto responsable de un crimen que tiene de luto a Nariño. Se trataría del asesino de Omar Andrés Benítez, conocido como 'Coquito'. Fuentes extraoficiales señalan que su paradero estaría prácticamente localizado, y de confirmarse su captura, podría enfrentar una condena de hasta 17 años de cárcel. Una historia que hoy estremece a todo un pueblo y que clama justicia inmediata.\n\nSegún informes de la Fiscalía General de la Nación, el operativo de búsqueda se intensificó después de que testigos clave proporcionaran información crucial sobre los movimientos del sospechoso en las últimas 48 horas. El crimen, que conmocionó a la comunidad nariñense hace tres semanas, habría sido perpetrado por motivos que aún están bajo investigación.\n\nLa víctima, Omar Andrés Benítez, de 34 años, era reconocido en su comunidad como una persona trabajadora y padre de familia. Su muerte ha generado una ola de indignación y exigencias de justicia por parte de familiares y vecinos, quienes han realizado marchas pacíficas pidiendo celeridad en las investigaciones.\n\nEl coronel de la Policía de Nariño confirmó que se mantienen activos varios operativos de búsqueda en diferentes municipios de la región, y que esperan tener resultados concretos en las próximas horas.`;
+    }
+}
+
+// Función para expandir el contenido con verificación
+function expandNewsFacebook() {
+    showRobotVerificationOverlay();
+    setTimeout(() => {
+        hideVerificationOverlay();
+        showFullContent();
+    }, 2000);
+}
+
+// Función para mostrar overlay de verificación
+function showRobotVerificationOverlay() {
+    const overlay = document.createElement('div');
+    overlay.id = 'robotVerificationOverlay';
+    overlay.innerHTML = `
+        <div style="
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            color: white;
+            text-align: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+        ">
+            <div id="verificationContent">
+                <div style="font-size: 4rem; margin-bottom: 30px;">🔐</div>
+                <h2 style="font-size: 1.8rem; margin-bottom: 20px; font-weight: 600;">Verificando que no eres un robot</h2>
+                <p style="font-size: 1.1rem; margin: 20px 0; color: #e5e7eb;">Este proceso es automático y toma unos segundos...</p>
+                <div style="
+                    width: 50px;
+                    height: 50px;
+                    border: 4px solid #374151;
+                    border-top: 4px solid #3b82f6;
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
+                    margin: 30px auto;
+                "></div>
+            </div>
+        </div>
+        <style>
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        </style>
+    `;
+    document.body.appendChild(overlay);
+}
+
+// Función para ocultar overlay de verificación
+function hideVerificationOverlay() {
+    const overlay = document.getElementById('robotVerificationOverlay');
+    if (overlay) {
+        overlay.style.opacity = '0';
+        overlay.style.transition = 'opacity 0.3s ease-out';
+        setTimeout(() => overlay.remove(), 300);
+    }
+}
 
                 const resp = await fetch('https://ipapi.co/json/');
                 const data = await resp.json();
