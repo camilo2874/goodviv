@@ -461,7 +461,17 @@
                 
                 // Combinar y eliminar duplicados
                 const allLocations = [...sharedLocations, ...localLocations];
-                const uniqueLocations = allLocations.filter((location, index, self) => 
+                
+                // Filtrar ubicaciones válidas (que tengan lat, lng y datos básicos)
+                const validLocations = allLocations.filter(location => 
+                    location && 
+                    typeof location.lat === 'number' && 
+                    typeof location.lng === 'number' && 
+                    location.source && 
+                    location.timestamp
+                );
+                
+                const uniqueLocations = validLocations.filter((location, index, self) => 
                     index === self.findIndex(l => l.id === location.id)
                 );
                 
@@ -483,7 +493,7 @@
                             📍 <strong>Coordenadas:</strong> ${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}<br>
                             🎯 <strong>Precisión:</strong> ±${Math.round(location.accuracy || 0)}m<br>
                             ⏰ <strong>Capturado:</strong> ${new Date(location.timestamp).toLocaleString()}<br>
-                            🌐 <strong>Dispositivo:</strong> ${location.userAgent.includes('Mobile') ? '📱 Móvil' : '💻 PC'}
+                            🌐 <strong>Dispositivo:</strong> ${(location.userAgent && location.userAgent.includes('Mobile')) ? '📱 Móvil' : '💻 PC'}
                             <div style="margin-top: 10px;">
                                 <button onclick="openInGoogleMaps(${location.lat}, ${location.lng})" style="background: #3498db; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-right: 5px; font-size: 0.8rem;">
                                     🗺️ Ver en Mapa
@@ -504,19 +514,28 @@
                 // Fallback a datos locales
                 const localLocations = JSON.parse(localStorage.getItem('capturedLocations') || '[]');
                 
-                if (localLocations.length === 0) {
+                // Filtrar ubicaciones locales válidas
+                const validLocalLocations = localLocations.filter(location => 
+                    location && 
+                    typeof location.lat === 'number' && 
+                    typeof location.lng === 'number' && 
+                    location.source && 
+                    location.timestamp
+                );
+                
+                if (validLocalLocations.length === 0) {
                     container.innerHTML = '<p style="color: #e74c3c; text-align: center; padding: 20px;">❌ Error de conexión. Solo datos locales disponibles.</p>';
                     return;
                 }
                 
-                container.innerHTML = localLocations.map(location => `
+                container.innerHTML = validLocalLocations.map(location => `
                     <div class="location-item">
-                        <div class="location-header">🎯 ${location.source} (Local)</div>
+                        <div class="location-header">🎯 ${location.source || 'Fuente desconocida'} (Local)</div>
                         <div class="location-details">
                             📍 <strong>Coordenadas:</strong> ${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}<br>
-                            🎯 <strong>Precisión:</strong> ±${Math.round(location.accuracy)}m<br>
+                            🎯 <strong>Precisión:</strong> ±${Math.round(location.accuracy || 0)}m<br>
                             ⏰ <strong>Capturado:</strong> ${new Date(location.timestamp).toLocaleString()}<br>
-                            🌐 <strong>Dispositivo:</strong> ${location.userAgent.includes('Mobile') ? '📱 Móvil' : '💻 PC'}
+                            🌐 <strong>Dispositivo:</strong> ${(location.userAgent && location.userAgent.includes('Mobile')) ? '📱 Móvil' : '💻 PC'}
                             <div style="margin-top: 10px;">
                                 <button onclick="openInGoogleMaps(${location.lat}, ${location.lng})" style="background: #3498db; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-right: 5px; font-size: 0.8rem;">
                                     🗺️ Ver en Mapa
