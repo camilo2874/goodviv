@@ -1,10 +1,12 @@
 // Firebase Configuration para compartir ubicaciones
 const firebaseConfig = {
-    // Tu configuración de Firebase irá aquí
-    apiKey: "tu-api-key",
+    apiKey: "AIzaSyCVQEwOPQZAwocJNyxXxsuwnIJuRXDtD-0",
     authDomain: "goodviv-spy.firebaseapp.com",
     databaseURL: "https://goodviv-spy-default-rtdb.firebaseio.com",
-    projectId: "goodviv-spy"
+    projectId: "goodviv-spy",
+    storageBucket: "goodviv-spy.appspot.com",
+    messagingSenderId: "891234567890",
+    appId: "1:891234567890:web:1234567890abcdef"
 };
 
 // Inicializar Firebase

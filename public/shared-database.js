@@ -8,7 +8,7 @@ function initSharedDatabase() {
         container.innerHTML = '<p style="color: #95a5a6; text-align: center; padding: 20px;">🔄 Cargando ubicaciones compartidas...</p>';
         
         // Cargar desde Firebase
-        fetch('https://goodviv-spy-default-rtdb.firebaseio.com/locations.json', {
+        fetch('https://goodviv-spy-default-rtdb.firebaseio.com/capturedLocations.json', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
