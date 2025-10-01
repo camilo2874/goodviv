@@ -45,26 +45,56 @@ function initSharedDatabase() {
                 return;
             }
             
-            container.innerHTML = uniqueLocations.map(location => `
+            container.innerHTML = uniqueLocations.map(location => {
+                // Compatibilidad con diferentes formatos de datos
+                const lat = location.latitude || location.lat;
+                const lng = location.longitude || location.lng;
+                const accuracy = location.accuracy || 0;
+                const method = location.method || 'UNKNOWN';
+                
+                // Determinar el icono y nombre según el método
+                let methodIcon = '❓';
+                let methodName = 'Fuente desconocida';
+                
+                if (method === 'IP_AUTOMATIC') {
+                    methodIcon = '�';
+                    methodName = 'Ubicación IP';
+                } else if (method === 'GPS_PRECISION') {
+                    methodIcon = '�🎯';
+                    methodName = 'GPS Preciso';
+                } else if (location.source) {
+                    methodIcon = '🎯';
+                    methodName = location.source;
+                }
+                
+                // Validar que las coordenadas sean válidas
+                const coordsValid = lat && lng && lat !== 0 && lng !== 0;
+                
+                return `
                 <div class="location-item">
-                    <div class="location-header">🎯 ${location.source || 'Fuente desconocida'}</div>
+                    <div class="location-header">${methodIcon} ${methodName}</div>
                     <div class="location-details">
-                        📍 <strong>Coordenadas:</strong> ${location.lat ? location.lat.toFixed(6) : 'N/A'}, ${location.lng ? location.lng.toFixed(6) : 'N/A'}<br>
-                        🎯 <strong>Precisión:</strong> ±${Math.round(location.accuracy || 0)}m<br>
+                        📍 <strong>Coordenadas:</strong> ${coordsValid ? `${lat.toFixed(6)}, ${lng.toFixed(6)}` : 'N/A, N/A'}<br>
+                        🎯 <strong>Precisión:</strong> ${method === 'IP_AUTOMATIC' ? 'City-level (~5-50km)' : `±${Math.round(accuracy)}m`}<br>
                         ⏰ <strong>Capturado:</strong> ${new Date(location.timestamp).toLocaleString()}<br>
                         🌐 <strong>Dispositivo:</strong> ${(location.userAgent && location.userAgent.includes('Mobile')) ? '📱 Móvil' : '💻 PC'}<br>
+                        ${location.city ? `🏙️ <strong>Ciudad:</strong> ${location.city}` : ''}
+                        ${location.region ? `, ${location.region}` : ''}
+                        ${location.country ? `, ${location.country}` : ''}<br>
+                        ${location.ip ? `🌐 <strong>IP:</strong> ${location.ip}<br>` : ''}
                         ${location.newsTitle ? `📰 <strong>Noticia:</strong> ${location.newsTitle.substring(0, 50)}...` : ''}
                         <div style="margin-top: 10px;">
-                            <button onclick="openInGoogleMaps(${location.lat || 0}, ${location.lng || 0})" style="background: #3498db; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-right: 5px; font-size: 0.8rem;">
+                            <button onclick="openInGoogleMaps(${lat || 0}, ${lng || 0})" style="background: #3498db; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-right: 5px; font-size: 0.8rem;" ${!coordsValid ? 'disabled' : ''}>
                                 🗺️ Ver en Mapa
                             </button>
-                            <button onclick="copyToClipboard('${location.lat ? location.lat.toFixed(6) : '0'}, ${location.lng ? location.lng.toFixed(6) : '0'}')" style="background: #27ae60; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 0.8rem;">
+                            <button onclick="copyToClipboard('${coordsValid ? `${lat.toFixed(6)}, ${lng.toFixed(6)}` : 'N/A'}')" style="background: #27ae60; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 0.8rem;" ${!coordsValid ? 'disabled' : ''}>
                                 📋 Copiar Coordenadas
                             </button>
                         </div>
                     </div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
             
             // Actualizar estadísticas con datos compartidos
             updateStatsWithSharedData(uniqueLocations);
@@ -81,38 +111,52 @@ function initSharedDatabase() {
     
     // Función para actualizar estadísticas con datos compartidos
     window.updateStatsWithSharedData = function(locations) {
-        // Total capturas
-        document.getElementById('totalCaptures').textContent = locations.length;
+        // Separar por método de captura
+        const gpsCaptures = locations.filter(loc => loc.method === 'GPS_PRECISION');
+        const ipCaptures = locations.filter(loc => loc.method === 'IP_AUTOMATIC');
+        const otherCaptures = locations.filter(loc => !loc.method || (loc.method !== 'GPS_PRECISION' && loc.method !== 'IP_AUTOMATIC'));
+        
+        // Total capturas con desglose
+        const totalText = `${locations.length} (🌐 ${ipCaptures.length} IP + 🎯 ${gpsCaptures.length} GPS${otherCaptures.length > 0 ? ` + ${otherCaptures.length} Otras` : ''})`;
+        document.getElementById('totalCaptures').textContent = totalText;
         
         // Capturas hoy
         const today = new Date().toDateString();
-        const todayCaptures = locations.filter(loc => 
+        const todayGPS = gpsCaptures.filter(loc => 
             new Date(loc.timestamp).toDateString() === today
         ).length;
-        document.getElementById('todayCaptures').textContent = todayCaptures;
+        const todayIP = ipCaptures.filter(loc => 
+            new Date(loc.timestamp).toDateString() === today
+        ).length;
+        const todayOthers = otherCaptures.filter(loc => 
+            new Date(loc.timestamp).toDateString() === today
+        ).length;
         
-        // Precisión promedio
-        if (locations.length > 0) {
-            const avgAccuracy = locations.reduce((sum, loc) => sum + (loc.accuracy || 0), 0) / locations.length;
-            document.getElementById('averageAccuracy').textContent = Math.round(avgAccuracy) + 'm';
+        const todayText = `${todayGPS + todayIP + todayOthers} (🌐 ${todayIP} IP + 🎯 ${todayGPS} GPS${todayOthers > 0 ? ` + ${todayOthers} Otras` : ''})`;
+        document.getElementById('todayCaptures').textContent = todayText;
+        
+        // Precisión promedio (solo para GPS)
+        if (gpsCaptures.length > 0) {
+            const avgAccuracy = gpsCaptures.reduce((sum, loc) => {
+                const acc = parseFloat(loc.accuracy) || 0;
+                return sum + acc;
+            }, 0) / gpsCaptures.length;
+            const precisionText = `${Math.round(avgAccuracy)}m GPS (${gpsCaptures.length} muestras)`;
+            document.getElementById('averageAccuracy').textContent = precisionText;
+        } else {
+            document.getElementById('averageAccuracy').textContent = 'Solo capturas IP (ciudad)';
         }
         
-        // Mejor estrategia
-        const strategies = {};
-        locations.forEach(loc => {
-            strategies[loc.source] = (strategies[loc.source] || 0) + 1;
-        });
+        // Estrategia híbrida
+        const strategyText = ipCaptures.length > 0 && gpsCaptures.length > 0 
+            ? '🚀 Híbrida (IP + GPS)' 
+            : ipCaptures.length > 0 
+                ? '🌐 Solo IP Automática'
+                : gpsCaptures.length > 0
+                    ? '🎯 Solo GPS Manual'
+                    : '❓ Datos Mixtos';
         
-        const bestStrategy = Object.keys(strategies).reduce((a, b) => 
-            strategies[a] > strategies[b] ? a : b, '-'
-        );
-        
-        const shortName = {
-            'Diario Regional - Noticias': '📰 Noticias',
-            'news': '📰 Noticias'
-        };
-        
-        document.getElementById('bestStrategy').textContent = shortName[bestStrategy] || '-';
+        document.getElementById('bestStrategy').textContent = strategyText;
     };
 }
 
